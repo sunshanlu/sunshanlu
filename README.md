@@ -1,6 +1,6 @@
 - 👋 Hi, I’m @sunshanlu.
-- 👀 I’m interested in AI and Algorithms.
-- 🌱 I’m currently learning DL.
+- 👀 I’m interested in AI and SLAM Algorithms.
+- 🌱 I’m currently learning V-SLAM and L-SLAM.
 - 💞️ I’m looking to collaborate on nothing at present
 - 📫 How to reach me: My email -> ssl2001@126.com
 

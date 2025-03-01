@@ -129,7 +129,7 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/slam_viewer
 下面是`slam_viewerTargets.cmake`文件的部分截图，这部分内容相当**重要**，或者中可以通过这个`xxxTargets.cmake`文件来找到三方库的`Target`信息，并且可以明确这个`Target`的依赖关系。
 
 <div align="center">
-    <img src="../images/target-cmake.png" alt="xxxTargets.cmake" width="80%">
+    <img src="../images/target-cmake.png" alt="xxxTargets.cmake" width="100%">
 </div>
 
 ### 2. 安装导出的Target依赖文件到指定位置

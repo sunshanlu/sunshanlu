@@ -5,7 +5,7 @@ sys.path.append(os.curdir)
 from pelicanconf import *
 
 
-SITEURL = "https://sunshanlu.github.io/dso_ssl"
+SITEURL = "https://sunshanlu.github.io/sunshanlu"
 FEED_DOMAIN = SITEURL
 FEED_ALL_ATOM = "feeds/all.atom.xml"
 CATEGORY_FEED_ATOM = "feeds/{slug}.atom.xml"

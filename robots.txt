@@ -1,4 +1,0 @@
-User-agent: *
-Disallow:
-
-Sitemap: https://sunshanlu.github.io/dso_ssl/sitemap.xml

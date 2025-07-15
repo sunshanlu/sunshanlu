@@ -1,0 +1,1 @@
+# IMU的初始化在VINS和ORB-SLAM中

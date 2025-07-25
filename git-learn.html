@@ -388,6 +388,17 @@ git<span class="w"> </span>diff<span class="w"> </span>&lt;commit-a&gt;<span cla
 <li>注意，这里的父级不仅包含同一<code>branch</code>下的<code>commit</code>关系，还包含了<code>merge</code>后，<code>merge</code>节点对应的<code>commit</code>的父子关系。</li>
 <li>当<code>git log &lt;commit/branch/tag&gt;</code>时，对应的都是其指向的<code>commit</code>对应的所有父级（包含其本身）的<code>commit</code>节点信息。</li>
 </ul>
+<h3 id="44-rebase">4.4&nbsp;团队合作谨用rebase操作</h3>
+<ul>
+<li><code>git rebase</code> 一个比较危险的操作，它最普通的用法是可以将某个<code>branch</code>的所有<code>commit</code>的父<code>commit</code>转换到指定的<code>commit</code>下，也叫做<code>branch</code>的换基操作。</li>
+<li>此外，交互式<code>rebase</code>操作通过<code>-i</code>选项打开，通过指定某个<code>commit</code>，对其子<code>commit</code>进行统一的修改操作</li>
+<li><code>edit</code>，对某个<code>commit</code>提交的内容不满意，可以对这个<code>commit</code>进行针对性的修改，然后使用<code>git rebase --continue</code>继续</li>
+<li><code>reword</code>，对某个<code>commit</code>提交的<code>commit message</code>进行修改</li>
+<li><code>squash</code>，对多个<code>commit</code>操作执行合并操作</li>
+<li><code>fix-up</code>，对多个<code>commit</code>合并但丢弃提交信息</li>
+<li><code>drop</code>，删除提交，或者直接在交互界面删除某行即可。</li>
+<li>注意，<code>git rebase</code>操作会在指定的<code>upstream</code>的基础上，生成新的<code>commit</code>，新生成的<code>commit</code>的<code>commit hash</code>发生了改变，因此当向远程推送时，远程仓库无法执行<code>fast forward</code>的合并操作，会导致推送失败。因此当团队合作开发时，请谨慎使用<code>git rebase</code>。</li>
+</ul>
 
 
              

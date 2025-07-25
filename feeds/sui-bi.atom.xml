@@ -299,6 +299,17 @@ git&lt;span class="w"&gt; &lt;/span&gt;diff&lt;span class="w"&gt; &lt;/span&gt;&
 &lt;li&gt;当直接使用&lt;code&gt;git log&lt;/code&gt;时，会将&lt;code&gt;HEAD&lt;/code&gt;指向的&lt;code&gt;commit&lt;/code&gt;对应的所有父级（包含其本身）对应的&lt;code&gt;commit&lt;/code&gt;对应的&lt;code&gt;hash&lt;/code&gt;值和&lt;code&gt;commit content&lt;/code&gt;内容打印出来（包括时间、作者和邮箱信息）。&lt;/li&gt;
 &lt;li&gt;注意，这里的父级不仅包含同一&lt;code&gt;branch&lt;/code&gt;下的&lt;code&gt;commit&lt;/code&gt;关系，还包含了&lt;code&gt;merge&lt;/code&gt;后，&lt;code&gt;merge&lt;/code&gt;节点对应的&lt;code&gt;commit&lt;/code&gt;的父子关系。&lt;/li&gt;
 &lt;li&gt;当&lt;code&gt;git log &amp;lt;commit/branch/tag&amp;gt;&lt;/code&gt;时，对应的都是其指向的&lt;code&gt;commit&lt;/code&gt;对应的所有父级（包含其本身）的&lt;code&gt;commit&lt;/code&gt;节点信息。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="44-rebase"&gt;4.4&amp;nbsp;团队合作谨用rebase操作&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;git rebase&lt;/code&gt; 一个比较危险的操作，它最普通的用法是可以将某个&lt;code&gt;branch&lt;/code&gt;的所有&lt;code&gt;commit&lt;/code&gt;的父&lt;code&gt;commit&lt;/code&gt;转换到指定的&lt;code&gt;commit&lt;/code&gt;下，也叫做&lt;code&gt;branch&lt;/code&gt;的换基操作。&lt;/li&gt;
+&lt;li&gt;此外，交互式&lt;code&gt;rebase&lt;/code&gt;操作通过&lt;code&gt;-i&lt;/code&gt;选项打开，通过指定某个&lt;code&gt;commit&lt;/code&gt;，对其子&lt;code&gt;commit&lt;/code&gt;进行统一的修改操作&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;edit&lt;/code&gt;，对某个&lt;code&gt;commit&lt;/code&gt;提交的内容不满意，可以对这个&lt;code&gt;commit&lt;/code&gt;进行针对性的修改，然后使用&lt;code&gt;git rebase --continue&lt;/code&gt;继续&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;reword&lt;/code&gt;，对某个&lt;code&gt;commit&lt;/code&gt;提交的&lt;code&gt;commit message&lt;/code&gt;进行修改&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;squash&lt;/code&gt;，对多个&lt;code&gt;commit&lt;/code&gt;操作执行合并操作&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fix-up&lt;/code&gt;，对多个&lt;code&gt;commit&lt;/code&gt;合并但丢弃提交信息&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;drop&lt;/code&gt;，删除提交，或者直接在交互界面删除某行即可。&lt;/li&gt;
+&lt;li&gt;注意，&lt;code&gt;git rebase&lt;/code&gt;操作会在指定的&lt;code&gt;upstream&lt;/code&gt;的基础上，生成新的&lt;code&gt;commit&lt;/code&gt;，新生成的&lt;code&gt;commit&lt;/code&gt;的&lt;code&gt;commit hash&lt;/code&gt;发生了改变，因此当向远程推送时，远程仓库无法执行&lt;code&gt;fast forward&lt;/code&gt;的合并操作，会导致推送失败。因此当团队合作开发时，请谨慎使用&lt;code&gt;git rebase&lt;/code&gt;。&lt;/li&gt;
 &lt;/ul&gt;</content><category term="随笔"></category><category term="git"></category></entry><entry><title>如何使用cmake构建一个自定义的可安装的库呢？</title><link href="https://sunshanlu.github.io/sunshanlu/cmake-build-your-lib" rel="alternate"></link><published>2025-03-01T00:00:00+08:00</published><updated>2025-03-01T00:00:00+08:00</updated><author><name>孙善路-github</name></author><id>tag:sunshanlu.github.io,2025-03-01:/sunshanlu/cmake-build-your-lib</id><summary type="html">&lt;h2 id="_1"&gt;背景&lt;/h2&gt;
 &lt;p&gt;我觉得所有学习过某种编程语言的人，或多或少都希望自己构建一个可使用&lt;strong&gt;标准化流程&lt;/strong&gt;安装的三方库。当然我也不 …&lt;/p&gt;</summary><content type="html">&lt;h2 id="_1"&gt;背景&lt;/h2&gt;
 &lt;p&gt;我觉得所有学习过某种编程语言的人，或多或少都希望自己构建一个可使用&lt;strong&gt;标准化流程&lt;/strong&gt;安装的三方库。当然我也不例外，我平时的大部分精力都会放在SLAM的学习上，我的想法是做一个简单方便的SLAM可视化小工具，用来帮助自己快速验证一个SLAM算法的效果和可行性。几个月前，我确实把一个名为&lt;a href="https://github.com/sunshanlu/SLAM_VIEWER"&gt;SLAM_VIEWER&lt;/a&gt;的小工具开源了出来。为了方便自己也是为了方便大家的使用，我希望我写的三方库可以像主流的三方库一样，能够使用一个&lt;strong&gt;标准化的编译和安装&lt;/strong&gt;流程，并能够在cmake中很方便地导入使用。在我查阅了cmake官方文档并奴役了许多AI后，得到了一套流程化的解决方案：&lt;/p&gt;

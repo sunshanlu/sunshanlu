@@ -117,4 +117,47 @@ $$&lt;/div&gt;
     (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
-&lt;/script&gt;</content><category term="DL, yolo"></category><category term="DL"></category><category term="YOLO"></category></entry></feed>
+&lt;/script&gt;</content><category term="DL, yolo"></category><category term="DL"></category><category term="YOLO"></category></entry><entry><title>了解yolov8目标检测算法的运行逻辑</title><link href="https://sunshanlu.github.io/sunshanlu/principle-of-yolov8" rel="alternate"></link><published>2025-04-02T00:00:00+08:00</published><updated>2025-04-02T00:00:00+08:00</updated><author><name>孙善路-github</name></author><id>tag:sunshanlu.github.io,2025-04-02:/sunshanlu/principle-of-yolov8</id><summary type="html">
+&lt;p&gt;&lt;strong&gt;YOLOv8&lt;/strong&gt;（You Only Look Once version 8）是一种高效的单阶段目标检测算法，其流程可概括为以下四个核心阶段：&lt;/p&gt;
+&lt;div align="center"&gt;
+&lt;image alt="yolov8" src="https://sunshanlu.github.io/sunshanlu/images/yolov8.png" width="800px/"/&gt;
+&lt;/div&gt;
+&lt;h2 id="1"&gt;1. ​​数据预处理​​&lt;/h2&gt;
+&lt;p&gt;​​图像缩放与归一 …&lt;/p&gt;</summary><content type="html">
+&lt;p&gt;&lt;strong&gt;YOLOv8&lt;/strong&gt;（You Only Look Once version 8）是一种高效的单阶段目标检测算法，其流程可概括为以下四个核心阶段：&lt;/p&gt;
+&lt;div align="center"&gt;
+&lt;image alt="yolov8" src="https://sunshanlu.github.io/sunshanlu/images/yolov8.png" width="800px/"/&gt;
+&lt;/div&gt;
+&lt;h2 id="1"&gt;1. ​​数据预处理​​&lt;/h2&gt;
+&lt;p&gt;​​图像缩放与归一化​​：输入图像调整至固定尺寸（如640×640像素），并进行像素值归一化（0-1范围）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;​​数据增强​​：训练时采用多种增强技术提升泛化能力，包括：&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;​Mosaic&lt;/strong&gt;增强​​：随机拼接4张图像，模拟复杂场景和小目标。&lt;/li&gt;
+&lt;li&gt;​MixUp增强​​：线性混合两张图像及标签，增加多样性。&lt;/li&gt;
+&lt;li&gt;​空间扰动​​（如随机旋转、裁剪）和​​颜色扰动​​（如HSV调整）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="2"&gt;2. ​​特征提取与融合​​&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;​​骨干网络（&lt;strong&gt;Backbone&lt;/strong&gt;）：通过​&lt;strong&gt;​C2f&lt;/strong&gt;模块​​（替代YOLOv5的C3模块）优化梯度流。C2f包含多分支Bottleneck堆叠，增强特征重用并减少计算冗余。&lt;/li&gt;
+&lt;li&gt;颈部网络（&lt;strong&gt;Neck&lt;/strong&gt;）​​：基于​​PANet（Path Aggregation Network）​​ 构建&lt;strong&gt;特征金字塔&lt;/strong&gt;：​多尺度融合​​：高层语义特征（检测大目标）与底层细节特征（检测小目标）通过上采样融合。​SPPF模块​​：快速空间金字塔池化，聚合不同尺度的上下文信息。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="3-head"&gt;3. ​​预测生成（Head）​​&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;​Anchor-Free设计​​：抛弃预定义锚框，直接预测边界框中心偏移量（x, y）和宽高（w, h）。&lt;/li&gt;
+&lt;li&gt;解耦头（Decoupled Head）​​：分类与回归任务分离：&lt;/li&gt;
+&lt;li&gt;分类分支​​：预测类别概率（如80类COCO数据集），使用​​Varifocal Loss（&lt;span class="caps"&gt;VFL&lt;/span&gt;）​​ 解决样本不平衡。&lt;/li&gt;
+&lt;li&gt;​回归分支​​：预测边界框坐标，采用​​&lt;span class="caps"&gt;DFL&lt;/span&gt;（Distribution Focal Loss） + CIoU Loss​​，提升定位精度。&lt;/li&gt;
+&lt;li&gt;​​动态标签分配​​：通过​​Task-Aligned Assigner​​，综合分类得分与IoU动态匹配正负样本。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="4"&gt;4. ​​后处理​​&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;​​置信度阈值过滤​​：剔除置信度低于阈值（如0.5）的预测框。&lt;/li&gt;
+&lt;li&gt;​非极大值抑制（&lt;span class="caps"&gt;NMS&lt;/span&gt;）​​：去除重叠冗余框，保留IoU最高的预测框（常用DIoU-NMS优化遮挡场景）。&lt;/li&gt;
+&lt;li&gt;​​输出解码​​：将边界框坐标还原至原图尺寸，生成最终检测结果（类别、位置、置信度）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;🌟 ​​流程特点与优势​​&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;​​端到端高效性​​：单次前向传播实现实时检测（如YOLOv8n仅需0.99ms/帧）。&lt;/li&gt;
+&lt;li&gt;精度-速度平衡​​：C2f模块、Anchor-Free和解耦头提升小目标检测与定位精度（mAP50-95达53.9%）。&lt;/li&gt;
+&lt;li&gt;灵活部署​​：提供n/s/m/l/x五级模型缩放，适配不同算力需求。&lt;/li&gt;
+&lt;/ul&gt;</content><category term="DL, yolo"></category><category term="DL"></category><category term="YOLO"></category></entry></feed>

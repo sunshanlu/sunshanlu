@@ -12,23 +12,23 @@
 
         <meta name="google-site-verification" content="UpDPegqFb_TnOIJbDp5ud8wVncaUoUB-fJoQyiiAdmg" />        <meta name="msvalidate.01" content="A86784EE624E2187E0AC969B764CE1E1" />        <meta name="author" content="孙善路-github" />
 
-        <meta name="description" content="1. 端到端的IA-YOLO原理 目前项目需要实现在恶劣环境下实现目标检测功能，通过实验发现，目标检测在雨、雾、扬尘等恶劣光照条件 …
+        <meta name="description" content="YOLOv8（You Only Look Once version 8）是一种高效的单阶段目标检测算法，其流程可概括为以下四个核心阶段： 1. ​​数据预处理​​ ​​图像缩放与归一 …
 " />
         <meta property="og:type" content="article" />
         <meta name="twitter:card" content="summary">
 
 <meta name="keywords" content="DL, YOLO, DL, yolo, " />
 
-<meta property="og:title" content="IA-YOLO原理 "/>
-<meta property="og:url" content="https://sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO" />
-<meta property="og:description" content="1. 端到端的IA-YOLO原理 目前项目需要实现在恶劣环境下实现目标检测功能，通过实验发现，目标检测在雨、雾、扬尘等恶劣光照条件 …" />
+<meta property="og:title" content="了解yolov8目标检测算法的运行逻辑 "/>
+<meta property="og:url" content="https://sunshanlu.github.io/sunshanlu/principle-of-yolov8" />
+<meta property="og:description" content="YOLOv8（You Only Look Once version 8）是一种高效的单阶段目标检测算法，其流程可概括为以下四个核心阶段： 1. ​​数据预处理​​ ​​图像缩放与归一 …" />
 <meta property="og:site_name" content="SSL的个人Blog" />
 <meta property="og:article:author" content="孙善路-github" />
 <meta property="og:article:published_time" content="2025-04-02T00:00:00+08:00" />
-<meta name="twitter:title" content="IA-YOLO原理 ">
-<meta name="twitter:description" content="1. 端到端的IA-YOLO原理 目前项目需要实现在恶劣环境下实现目标检测功能，通过实验发现，目标检测在雨、雾、扬尘等恶劣光照条件 …">
+<meta name="twitter:title" content="了解yolov8目标检测算法的运行逻辑 ">
+<meta name="twitter:description" content="YOLOv8（You Only Look Once version 8）是一种高效的单阶段目标检测算法，其流程可概括为以下四个核心阶段： 1. ​​数据预处理​​ ​​图像缩放与归一 …">
 
-        <title>IA-YOLO原理  · SSL的个人Blog
+        <title>了解yolov8目标检测算法的运行逻辑  · SSL的个人Blog
 </title>
         <link rel="shortcut icon" href="https://sunshanlu.github.io/sunshanlu/theme/images/favicon.ico" type="image/x-icon" />
         <link rel="icon" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-152x152.png" type="image/png" />
@@ -83,8 +83,8 @@
 <div class="row-fluid">
     <header class="page-header span10 offset2">
         <h1>
-            <a href="https://sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO">
-                <span class="caps">IA</span>-YOLO原理
+            <a href="https://sunshanlu.github.io/sunshanlu/principle-of-yolov8">
+                了解yolov8目标检测算法的运行逻辑
             </a>
         </h1>
     </header>
@@ -96,11 +96,10 @@
         <h4>Contents</h4>
         <div class="toc">
 <ul>
-<li><a href="#1-ia-yolo">1. 端到端的IA-YOLO原理</a><ul>
-<li><a href="#11-dip">1.1 可微的图像处理模块DIP</a></li>
-<li><a href="#12-cnn-ppyolo">1.2 <span class="caps">CNN</span>-PP和YOLO混合训练过程</a></li>
-</ul>
-</li>
+<li><a href="#1">1. ​​数据预处理​​</a></li>
+<li><a href="#2">2. ​​特征提取与融合​​</a></li>
+<li><a href="#3-head">3. ​​预测生成（Head）​​</a></li>
+<li><a href="#4">4. ​​后处理​​</a></li>
 </ul>
 </div>
         </nav>
@@ -108,131 +107,52 @@
     <div class="span8 article-content">
             
             
-<h2 id="1-ia-yolo">1. 端到端的IA-YOLO原理</h2>
-<p>目前项目需要实现在恶劣环境下实现目标检测功能，通过实验发现，目标检测在雨、雾、扬尘等恶劣光照条件下性能骤降，而使用传统方法先增强图像再进行深度学习检测往往存在任务冲突与信息损失。最近通过查找资料发现，2022年发表的IA-YOLO方法提出了一种端到端自适应框架通过<strong>可微图像处理模块DIP</strong>和 <strong>​​<span class="caps">CNN</span>-PP模块​​参数预测</strong> ，并使用与<code>yolov3</code>混合优化实现恶劣环境下效率与精度的提高。下面重点对<code>IA-YOLO</code>中的<code>DIP</code>和<code>CNN-PP</code>模块进行介绍。</p>
-<h3 id="11-dip">1.1 可微的图像处理模块DIP</h3>
-<p>DIP模块的设计原则如下：</p>
-<ul>
-<li>与像素操作的<strong>可微性</strong>，支持梯度的反向传播，实现与检测器的端到端训练；</li>
-<li>与<strong>分辨率</strong>无关，支持任意分辨率的输入；</li>
-</ul>
-<p>可微的图像处理模块主要由去雾滤波器、逐像素滤波器（白平衡，<code>gamma</code>，<code>tone</code>曲线，对比度）和锐化滤波器组成。</p>
-<p><code>WB</code>白平衡操作由3个参数组成，分别是<span class="math">\(w_r\)</span>，<span class="math">\(w_g\)</span>和<span class="math">\(w_b\)</span>。对图像的作用可以由下面的公式描述：</p>
-<div class="math">$$
-    P_o = (w_rr_i,w_gg_i,w_bb_i)
-$$</div>
-<p><code>gamma</code>操作由1个参数<span class="math">\(\gamma\)</span>描述，当<span class="math">\(\gamma &lt; 1\)</span>时候，暗部细节会增强，图像整体会变亮，这种情况为<strong>伽玛压缩</strong>，主要应用在低光照图像增强；当<span class="math">\(\gamma &gt; 1\)</span>时候，亮部细节增强，整体变暗，这种情况为<strong>伽玛展开</strong>，主要应用在高光抑制、对比度提升。它可以由下面的公式描述：</p>
-<div class="math">$$
-    P_o = P_i^{\gamma}
-$$</div>
-<p><code>Tone</code>曲线又叫色调调整曲线，在<code>IA-YOLO</code>中设计成为由<code>8</code>个参数组成的分段线性曲线。从而实现不同颜色通道的映射。</p>
-<p><code>Contrast</code>对比度操作，使用参数<span class="math">\(\alpha\)</span>进行调节，对比度可以<strong>描述图像的最大和最小亮度之间的关系</strong>，当对比度增大时，图像的亮暗分布比较明显,可以由下面的公式描述：</p>
-<div class="math">$$
-\begin{align}
-    &amp;P_o &amp;=&amp; \alpha \cdot En(P_i) + (1-\alpha)\cdot P_i\\
-    &amp;Lum(P_i)&amp;=&amp;0.27 r_i + 0.67 g_i + 0.06 b_i\\
-    &amp;EnLum(P_i) &amp;=&amp; \frac{1}{2}(1-\cos(\pi \times(Lum(P_i))))\\
-    &amp;En(P_i)&amp;=&amp;P_i\times \frac{EnLum(P_i)}{Lum(P_i)}
-\end{align}
-$$</div>
-<p><code>Sharpen</code>图像锐化操作，可以突出显示图像的细节，锐化过程可以由下面的公式进行描述，其中<span class="math">\(I(x)\)</span>是输入图像，<span class="math">\(G(I(x))\)</span>表示高斯滤波器，<span class="math">\(\lambda\)</span>是一个正的比例因子。</p>
-<div class="math">$$
-    F(x, \lambda)=I(x)+\lambda(I(x)-G(I(x)))
-$$</div>
-<p>论文参考暗通道先验方法的启发，设计了具有可学习参数的去雾滤波器，由大气散射模型推到得到，去雾滤波器可以由下面的公式描述，其中，<span class="math">\(J(x)\)</span>代表干净图像，<span class="math">\(I(x)\)</span>代表雾化之后的图像，A为全球大气光，由<span class="math">\(I(x)\)</span>对应的最亮的1000个像素平均值估计。参数<span class="math">\(\omega\)</span>为去雾滤波的学习参数。</p>
-<div class="math">$$
-\begin{align}
-    &amp;I(x)&amp;=&amp;J(x)t(x) + A(1-t(x))\\
-    &amp;t(x)&amp;=&amp;1-\omega \min_C(\min_{x}\frac{I^C(x)}{A^C})
-\end{align}
-$$</div>
-<p>其前向传播过程可以由图下图描述：</p>
+<p><strong>YOLOv8</strong>（You Only Look Once version 8）是一种高效的单阶段目标检测算法，其流程可概括为以下四个核心阶段：</p>
 <div align="center">
-<image src="https://sunshanlu.github.io/sunshanlu/images/ia-yolo-forwad.png" width="1000"/>
+<image alt="yolov8" src="https://sunshanlu.github.io/sunshanlu/images/yolov8.png" width="800px/"/>
 </div>
-<h3 id="12-cnn-ppyolo">1.2 <span class="caps">CNN</span>-PP和YOLO混合训练过程</h3>
-<div align="center">
-<image src="https://sunshanlu.github.io/sunshanlu/images/ia-yolo.png" width="1000"/>
-</div>
-<p>整个训练过程可以由上面的图进行描述，以有雾的场景为例，<code>CNN-PP</code>模块的目的是通过<strong>了解图像的全局内容</strong>，如亮度、颜色、色调，以及雾的程度，来预测<code>DIP</code>模块的参数。因此，降采样图像足以估计这些信息，从而<strong>大大节省了计算成本</strong>。对给定任何分辨率的输入图像，<code>IA-YOLO</code>简单地使用双线性插值将其降采样到<code>256×256</code>分辨率。</p>
-<p><code>CNN-PP</code>网络由5个卷积层和2个全连通层组成。每个卷积块包括一个3×3的卷积层，<code>stride</code>为2和一个<code>Leaky Relu</code>激活函数。最终的全连接层输出DIP模块的超参数。这五个卷积层的输出通道分别为16、32、32、32和32。当参数总数为15个时，<code>CNN-PP</code>模型只包含<code>165K</code>个参数。</p>
-<p>最后，使用<code>yolov3</code>的损失函数，来联合优化<code>yolo</code>和<code>CNN-PP</code>模型。</p>
-<p>其核心优势：</p>
+<h2 id="1">1. ​​数据预处理​​</h2>
+<p>​​图像缩放与归一化​​：输入图像调整至固定尺寸（如640×640像素），并进行像素值归一化（0-1范围）。</p>
 <ul>
-<li><strong>强大的自适应能力</strong>​​：同一模型处理正常/恶劣天气，无性能下降（VOC_norm测试集mAP 73.23%）</li>
-<li><strong>高效的计算</strong>：<code>CNN-PP</code>网络使用将采样后的图像作为输入，仅增加了少量参数，优于加深网络层数的方法。</li>
+<li>​​数据增强​​：训练时采用多种增强技术提升泛化能力，包括：</li>
+<li><strong>​Mosaic</strong>增强​​：随机拼接4张图像，模拟复杂场景和小目标。</li>
+<li>​MixUp增强​​：线性混合两张图像及标签，增加多样性。</li>
+<li>​空间扰动​​（如随机旋转、裁剪）和​​颜色扰动​​（如HSV调整）。</li>
 </ul>
-<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width < 768) ? "left" : align;
-        indent = (screen.width < 768) ? "0em" : indent;
-        linebreak = (screen.width < 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
-
-    var configscript = document.createElement('script');
-    configscript.type = 'text/x-mathjax-config';
-    configscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        availableFonts: ['STIX', 'TeX']," +
-        "        preferredFont: 'STIX'," +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: '#145402 ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-</script>
+<h2 id="2">2. ​​特征提取与融合​​</h2>
+<ul>
+<li>​​骨干网络（<strong>Backbone</strong>）：通过​<strong>​C2f</strong>模块​​（替代YOLOv5的C3模块）优化梯度流。C2f包含多分支Bottleneck堆叠，增强特征重用并减少计算冗余。</li>
+<li>颈部网络（<strong>Neck</strong>）​​：基于​​PANet（Path Aggregation Network）​​ 构建<strong>特征金字塔</strong>：​多尺度融合​​：高层语义特征（检测大目标）与底层细节特征（检测小目标）通过上采样融合。​SPPF模块​​：快速空间金字塔池化，聚合不同尺度的上下文信息。</li>
+</ul>
+<h2 id="3-head">3. ​​预测生成（Head）​​</h2>
+<ul>
+<li>​Anchor-Free设计​​：抛弃预定义锚框，直接预测边界框中心偏移量（x, y）和宽高（w, h）。</li>
+<li>解耦头（Decoupled Head）​​：分类与回归任务分离：</li>
+<li>分类分支​​：预测类别概率（如80类COCO数据集），使用​​Varifocal Loss（<span class="caps">VFL</span>）​​ 解决样本不平衡。</li>
+<li>​回归分支​​：预测边界框坐标，采用​​<span class="caps">DFL</span>（Distribution Focal Loss） + CIoU Loss​​，提升定位精度。</li>
+<li>​​动态标签分配​​：通过​​Task-Aligned Assigner​​，综合分类得分与IoU动态匹配正负样本。</li>
+</ul>
+<h2 id="4">4. ​​后处理​​</h2>
+<ul>
+<li>​​置信度阈值过滤​​：剔除置信度低于阈值（如0.5）的预测框。</li>
+<li>​非极大值抑制（<span class="caps">NMS</span>）​​：去除重叠冗余框，保留IoU最高的预测框（常用DIoU-NMS优化遮挡场景）。</li>
+<li>​​输出解码​​：将边界框坐标还原至原图尺寸，生成最终检测结果（类别、位置、置信度）。</li>
+</ul>
+<p>🌟 ​​流程特点与优势​​</p>
+<ul>
+<li>​​端到端高效性​​：单次前向传播实现实时检测（如YOLOv8n仅需0.99ms/帧）。</li>
+<li>精度-速度平衡​​：C2f模块、Anchor-Free和解耦头提升小目标检测与定位精度（mAP50-95达53.9%）。</li>
+<li>灵活部署​​：提供n/s/m/l/x五级模型缩放，适配不同算力需求。</li>
+</ul>
 
 
              
  
                 <p id="post-share-links">
     喜欢这篇文章吗？喜欢就分享吧:
-      <a href="https://twitter.com/intent/tweet?text=IA-YOLO%E5%8E%9F%E7%90%86&url=https%3A//sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO&hashtags=dl,yolo" target="_blank" rel="nofollow noopener noreferrer" title="Share on Twitter">Twitter</a>
- ❄       <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A//sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO" target="_blank" rel="nofollow noopener noreferrer" title="Share on Facebook">Facebook</a>
- ❄       <a href="mailto:?subject=IA-YOLO%E5%8E%9F%E7%90%86&amp;body=https%3A//sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO" target="_blank" rel="nofollow noopener noreferrer" title="Share via Email">Email</a>
+      <a href="https://twitter.com/intent/tweet?text=%E4%BA%86%E8%A7%A3yolov8%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95%E7%9A%84%E8%BF%90%E8%A1%8C%E9%80%BB%E8%BE%91&url=https%3A//sunshanlu.github.io/sunshanlu/principle-of-yolov8&hashtags=dl,yolo" target="_blank" rel="nofollow noopener noreferrer" title="Share on Twitter">Twitter</a>
+ ❄       <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A//sunshanlu.github.io/sunshanlu/principle-of-yolov8" target="_blank" rel="nofollow noopener noreferrer" title="Share on Facebook">Facebook</a>
+ ❄       <a href="mailto:?subject=%E4%BA%86%E8%A7%A3yolov8%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95%E7%9A%84%E8%BF%90%E8%A1%8C%E9%80%BB%E8%BE%91&amp;body=https%3A//sunshanlu.github.io/sunshanlu/principle-of-yolov8" target="_blank" rel="nofollow noopener noreferrer" title="Share via Email">Email</a>
 
                 <hr />
     <div class="author-blurb">
@@ -268,7 +188,7 @@ $$</div>
                 <a class="accordion-toggle disqus-comment-count comment-count collapsed"
                    data-toggle="collapse"
                    data-parent="#accordion2"
-                   href="https://sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO#comment_thread"
+                   href="https://sunshanlu.github.io/sunshanlu/principle-of-yolov8#comment_thread"
                    id="comment-accordion-toggle">
                     Comments
                 </a>
@@ -279,7 +199,7 @@ $$</div>
 
                         <script src="https://utteranc.es/client.js"
         data-repo="sunshanlu/sunshanlu"
-        data-issue-term="https://sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO"
+        data-issue-term="https://sunshanlu.github.io/sunshanlu/principle-of-yolov8"
         data-label="✨💬✨"
         data-theme="github-light"
         crossorigin="anonymous"
@@ -299,15 +219,15 @@ $$</div>
 <section>
     <h2>Keep Reading</h2>
 <ul class="related-posts-list">
-<li><a href="https://sunshanlu.github.io/sunshanlu/principle-of-yolov8" title="了解yolov8目标检测算法的运行逻辑">了解yolov8目标检测算法的运行逻辑</a></li>
+<li><a href="https://sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO" title="IA-YOLO原理">IA-YOLO原理</a></li>
 </ul>
 <hr />
 </section>
             <aside>
             <nav>
             <ul class="articles-timeline">
-                <li class="previous-article">« <a href="https://sunshanlu.github.io/sunshanlu/principle-of-yolov8" title="Previous: 了解yolov8目标检测算法的运行逻辑">了解yolov8目标检测算法的运行逻辑</a></li>
-                <li class="next-article"><a href="https://sunshanlu.github.io/sunshanlu/git-learn" title="Next: git工具使用总结">git工具使用总结</a> »</li>
+                <li class="previous-article">« <a href="https://sunshanlu.github.io/sunshanlu/cmake-build-your-lib" title="Previous: 如何使用cmake构建一个自定义的可安装的库呢？">如何使用cmake构建一个自定义的可安装的库呢？</a></li>
+                <li class="next-article"><a href="https://sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO" title="Next: IA-YOLO原理">IA-YOLO原理</a> »</li>
             </ul>
             </nav>
             </aside>

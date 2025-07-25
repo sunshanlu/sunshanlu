@@ -1,5 +1,305 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>SSL的个人Blog - 随笔</title><link href="https://sunshanlu.github.io/sunshanlu/" rel="alternate"></link><link href="https://sunshanlu.github.io/sunshanlu/feeds/sui-bi.atom.xml" rel="self"></link><id>https://sunshanlu.github.io/sunshanlu/</id><updated>2025-03-01T00:00:00+08:00</updated><subtitle>记录开发随笔</subtitle><entry><title>如何使用cmake构建一个自定义的可安装的库呢？</title><link href="https://sunshanlu.github.io/sunshanlu/cmake-build-your-lib" rel="alternate"></link><published>2025-03-01T00:00:00+08:00</published><updated>2025-03-01T00:00:00+08:00</updated><author><name>孙善路-github</name></author><id>tag:sunshanlu.github.io,2025-03-01:/sunshanlu/cmake-build-your-lib</id><summary type="html">&lt;h2 id="_1"&gt;背景&lt;/h2&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>SSL的个人Blog - 随笔</title><link href="https://sunshanlu.github.io/sunshanlu/" rel="alternate"></link><link href="https://sunshanlu.github.io/sunshanlu/feeds/sui-bi.atom.xml" rel="self"></link><id>https://sunshanlu.github.io/sunshanlu/</id><updated>2025-06-30T00:00:00+08:00</updated><subtitle>记录开发随笔</subtitle><entry><title>git工具使用总结</title><link href="https://sunshanlu.github.io/sunshanlu/git-learn" rel="alternate"></link><published>2025-06-30T00:00:00+08:00</published><updated>2025-06-30T00:00:00+08:00</updated><author><name>孙善路-github</name></author><id>tag:sunshanlu.github.io,2025-06-30:/sunshanlu/git-learn</id><summary type="html">&lt;h2 id="1-git"&gt;1.&amp;nbsp;git仓库创建&lt;/h2&gt;
+&lt;h3 id="11"&gt;1.1&amp;nbsp;本地创建并推送&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;init
+git&lt;span class="w"&gt; &lt;/span&gt;remote&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;your-ssh-or-https-url&amp;gt;
+
+git&lt;span class="w"&gt; &lt;/span&gt;branch&lt;span class="w"&gt; &lt;/span&gt;-M&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;branch-name&amp;gt;&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="c1"&gt;# 推荐将分支名称设置为与origin一致&lt;/span&gt;
+&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;hello world&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;README.md&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="c1"&gt;# 替换成你实际对工作区的 …&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;h2 id="1-git"&gt;1.&amp;nbsp;git仓库创建&lt;/h2&gt;
+&lt;h3 id="11"&gt;1.1&amp;nbsp;本地创建并推送&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;init
+git&lt;span class="w"&gt; &lt;/span&gt;remote&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;your-ssh-or-https-url&amp;gt;
+
+git&lt;span class="w"&gt; &lt;/span&gt;branch&lt;span class="w"&gt; &lt;/span&gt;-M&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;branch-name&amp;gt;&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="c1"&gt;# 推荐将分支名称设置为与origin一致&lt;/span&gt;
+&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;hello world&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;README.md&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="c1"&gt;# 替换成你实际对工作区的操作&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt; &lt;/span&gt;.&lt;span class="w"&gt;                           &lt;/span&gt;&lt;span class="c1"&gt;# 添加到暂存区&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;commit&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;your commit message&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# 将展存区的内容添加到本地存储库 &lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;push&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;branch-name&amp;gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="c1"&gt;# 将当前分支推送到远程仓库，推荐本地和远程之间的分支名称一致&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;注意：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;本地创建仓库的&lt;strong&gt;默认名称&lt;/strong&gt;为&lt;code&gt;master&lt;/code&gt;，&lt;code&gt;git branch -M&lt;/code&gt;操作是强制对一个分支进行重命名，等同于&lt;code&gt;git branch --move --force&lt;/code&gt;操作。&lt;/li&gt;
+&lt;li&gt;在执行&lt;code&gt;git remote&lt;/code&gt; 和&lt;code&gt;git push&lt;/code&gt;操作之前，需要保证远程仓库已经建立完成。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="12-clone"&gt;1.2&amp;nbsp;远程创建并&lt;code&gt;clone&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;更加推荐的一种方法，可以直接在&lt;code&gt;github&lt;/code&gt;或者&lt;code&gt;gitee&lt;/code&gt;等平台上创建仓库，然后通过&lt;code&gt;git clone&lt;/code&gt;命令完成&lt;code&gt;clone&lt;/code&gt;操作。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;your-ssh-or-https-url&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;使用这种方式，可以保证你仓库的&lt;strong&gt;分支名称&lt;/strong&gt;、和&lt;strong&gt;远程仓库的关联关系&lt;/strong&gt;等保持一致。&lt;/p&gt;
+&lt;h2 id="2"&gt;2.&amp;nbsp;本地代码存储逻辑&lt;/h2&gt;
+&lt;h3 id="21"&gt;2.1&amp;nbsp;工作区遇到的问题&lt;/h3&gt;
+&lt;p&gt;试想一下，你对&lt;strong&gt;工作区&lt;/strong&gt;中的内容作了某些修改，但是你发现修改的内容并不能修复你目前存在的问题，你想将修改的部分删除掉，应该怎么做呢？&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;restore&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;file&amp;gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# 对单独的某个文件做修改后的恢复操作&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;restore&lt;span class="w"&gt; &lt;/span&gt;.&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="c1"&gt;# 对整个工作区中产生修改的所有文件进行恢复操作&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;假设在工作区中，你新建了某个文件，但是发现这个文件貌似没有起到什么作用，但恰好你不知道如何那个文件需要被删除，这里提供两种解决方案：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;使用&lt;code&gt;git status&lt;/code&gt;查看当前工作区状态，在&lt;strong&gt;未跟踪&lt;/strong&gt;部分找到新建的文件，然后使用系统文件管理功能针对性的删除文件。&lt;/li&gt;
+&lt;li&gt;使用命令行的方式实现删除操作，当然是在清除需要删除的文件之后执行。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;clean&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;file&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# 删除某个文件&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;clean&lt;span class="w"&gt; &lt;/span&gt;-df&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;dir&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# 删除某个目录，递归删除&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;下面是&lt;code&gt;git clean&lt;/code&gt;命令常见的参数：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-f&lt;/code&gt;：强制删除&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-i&lt;/code&gt;：在可交互模式下删除&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-d&lt;/code&gt;：对于某个文件夹，递归的删除&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="22"&gt;2.2&amp;nbsp;暂存区存储问题&lt;/h3&gt;
+&lt;p&gt;我认为对于暂存区出现的任何问题都可以通过直接修改当前工作区，然后通过&lt;code&gt;git add&lt;/code&gt;命令添加到暂存区解决。不过这里我还是贴出某些问题的&lt;strong&gt;命令行&lt;/strong&gt;解决方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;工作区添加到暂存区的方法&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;file&amp;gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# 添加新文件或文件修改到暂存区&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt; &lt;/span&gt;.&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="c1"&gt;# 添加所有更改和新创建文件到暂存区&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;添加到暂存区后,出现问题,如何修改?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;reset&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;file&amp;gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="c1"&gt;# 撤销某个指定文件的暂存区的更改&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;reset&lt;span class="w"&gt; &lt;/span&gt;.&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="c1"&gt;# 撤销暂存区的所有更改&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id="23"&gt;2.3&amp;nbsp;本地版本库存储问题&lt;/h3&gt;
+&lt;p&gt;当团队组合开发某个应用功能时，需要&lt;strong&gt;创建&lt;/strong&gt;新分支，然后当某个分支合并完成后，需要将一个分支进行&lt;strong&gt;删除&lt;/strong&gt;时应该如何操作呢？&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;checkout&lt;span class="w"&gt; &lt;/span&gt;-b&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;new-branch-name&amp;gt;&lt;span class="w"&gt;           &lt;/span&gt;&lt;span class="c1"&gt;# 以当前HEAD指向的commit为起始点，创建并切换到分支下&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;branch&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;new-branch-name&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;commit&amp;gt;&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="c1"&gt;# 以某次提交为起始点，创建分支，不切换&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;branch&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;new-branch-name&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;branch-name&amp;gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# 以branch指向的commit为起始点，创建分支，不切换&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;branch&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;new-branch-name&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;tag-name&amp;gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="c1"&gt;# 以某个tag指向的commit为起始点，创建分支，不切换&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;branch&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;branch-name&amp;gt;&lt;span class="w"&gt;                 &lt;/span&gt;&lt;span class="c1"&gt;# 删除某个分支&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;有一种比较清晰的&lt;code&gt;branch&lt;/code&gt;管理方法，即使用&lt;code&gt;name/task&lt;/code&gt;的命令方式，&lt;code&gt;name&lt;/code&gt;对应实际的人名，而&lt;code&gt;task&lt;/code&gt;代表这个人在这个分支下需要完成的人物，这样比较清晰明了，并且当其完成某个任务后，可以为这个分支打上一个&lt;code&gt;name/task&lt;/code&gt;的&lt;code&gt;tag&lt;/code&gt;标签这么作有以下两个好处：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当&lt;code&gt;task&lt;/code&gt;没有完成时，分支跟着&lt;code&gt;commit&lt;/code&gt;向前滚动，可以明确当前时间下，哪个人员在作哪些事情。&lt;/li&gt;
+&lt;li&gt;当&lt;code&gt;task&lt;/code&gt;完成后，可以将最终的&lt;code&gt;commit&lt;/code&gt;标记为一个&lt;code&gt;tag&lt;/code&gt;，做到工作留痕，并可以在未完成时（经过市场验证，发现解决的不是特别好），可以根据这个&lt;code&gt;tag&lt;/code&gt;回滚，继续完善这个任务。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当团队协作过程中，某个人在&lt;code&gt;name/task&lt;/code&gt;分支下，完成了功能开发以后，经测试没问题，进行向主分支合并时，或许会遇到一些问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当&lt;code&gt;main&lt;/code&gt;分支指向的提交为&lt;code&gt;name/task&lt;/code&gt;指向提交的直接祖先时，&lt;code&gt;git&lt;/code&gt;默认会采用&lt;code&gt;fast forward&lt;/code&gt;策略，不创建提交，而是直接将&lt;code&gt;main&lt;/code&gt;指向&lt;code&gt;name/task&lt;/code&gt;指向的提交。&lt;/li&gt;
+&lt;li&gt;当&lt;code&gt;name/task&lt;/code&gt;分支在解决问题，不断的创建提交的过程中，&lt;code&gt;main&lt;/code&gt;分支也在不断的被更新创建提交时，会出现以下两种情况：&lt;/li&gt;
+&lt;li&gt;当分支&lt;code&gt;name/task&lt;/code&gt;和&lt;code&gt;main&lt;/code&gt;同时拥有的文件&lt;strong&gt;没有发生改变时&lt;/strong&gt;，将无冲突发生，&lt;code&gt;git merge&lt;/code&gt;会默认合并到&lt;code&gt;main&lt;/code&gt;分支中去，中间会创建新的commit。&lt;/li&gt;
+&lt;li&gt;当分支&lt;code&gt;name/task&lt;/code&gt;和&lt;code&gt;main&lt;/code&gt;同时拥有的文件同时发生了修改时，将有冲突发生，&lt;code&gt;git merge&lt;/code&gt;会将冲突产生的文件里面的内容进行标记，并放在暂存区，等待用户解决。&lt;/li&gt;
+&lt;li&gt;当&lt;code&gt;git merge&lt;/code&gt;命令可以自己合并分支时，如果产生了提交，&lt;code&gt;git merge&lt;/code&gt;会自动生成提交语句，如果用户想自定义这个提交应该怎么解决？使用下面的命令即可解决这个问题。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;merge&lt;span class="w"&gt; &lt;/span&gt;--no-commit&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;name/task&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# 前提保证目前HEAD指向的是main分支&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;代码里面，&lt;code&gt;--no-commit&lt;/code&gt;参数代表的意思是不需要默认提交，而是将修改放到暂存区，等到用户边界提交内容后，再统一提交。&lt;/li&gt;
+&lt;li&gt;当存在冲突时，&lt;code&gt;--no-commit&lt;/code&gt;没有任何作用，因为冲突需要用户手动处理，不会默认提交。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当你刚提交完某个&lt;code&gt;commit&lt;/code&gt;到本地后，发现&lt;code&gt;comment content&lt;/code&gt;并不满意，无法体现你所做工作的内容，因此你想修改这个提交内容，应该怎么做呢？下面是解决思路：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;reset&lt;span class="w"&gt; &lt;/span&gt;--soft&lt;span class="w"&gt; &lt;/span&gt;HEAD^&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# 将当前分支回退到commit之前&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt; &lt;/span&gt;.
+git&lt;span class="w"&gt; &lt;/span&gt;commit&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;lt;your-new-commit-conten&amp;gt;&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;注意：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;--soft&lt;/code&gt;表示不删除工作区文件，退回到指定commit之后，工作区的内容并没有发生修改&lt;/li&gt;
+&lt;li&gt;保证最近提交没有同步到远程仓库，否则reset后，提交到远程仓库会失败&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="24-committag"&gt;2.4&amp;nbsp;提交&lt;code&gt;commit&lt;/code&gt;的别名&lt;code&gt;tag&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;经常逛&lt;code&gt;github&lt;/code&gt;的你，肯定会发现，某个存储库，除了使用&lt;code&gt;branch&lt;/code&gt;以外，还会有一个名为&lt;code&gt;tag&lt;/code&gt;的东西，这是什么？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;tag&lt;/code&gt;是一个&lt;code&gt;commit&lt;/code&gt;的类型别名，当使用某个&lt;code&gt;commit&lt;/code&gt;创建了&lt;code&gt;tag&lt;/code&gt;后，这个&lt;code&gt;tag&lt;/code&gt;就不会随着&lt;code&gt;commit&lt;/code&gt;的增加而更新指向了&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;branch&lt;/code&gt;会随着&lt;code&gt;commit&lt;/code&gt;的不断更新维护所有的提交，并维护的最后一个&lt;code&gt;commit&lt;/code&gt;，这是&lt;code&gt;branch&lt;/code&gt;与&lt;code&gt;tag&lt;/code&gt;之间最大的区别&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;tag&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;your-tag-name&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;commit-hash&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;lt;your-tag-desc-message&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# 以某个commit添加tag&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;tag&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;your-tag-name&amp;gt;&lt;span class="w"&gt;                                          &lt;/span&gt;&lt;span class="c1"&gt;# 删除tag&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;push&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;your-tag-name&amp;gt;&lt;span class="w"&gt;                                     &lt;/span&gt;&lt;span class="c1"&gt;# 推送tag到远程仓库&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id="3"&gt;3.&amp;nbsp;远程仓库存储逻辑&lt;/h2&gt;
+&lt;h3 id="31"&gt;3.1&amp;nbsp;本地与远程的同步操作&lt;/h3&gt;
+&lt;p&gt;远程到本地的同步操作：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# 存储库同步操作&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;your-remote-repo-url&amp;gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="c1"&gt;# 本地向远程同步所有存储库内容&lt;/span&gt;
+
+&lt;span class="c1"&gt;# 分支同步操作&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;pull&lt;span class="w"&gt;                            &lt;/span&gt;&lt;span class="c1"&gt;# 从远程仓库中拉取merge所有更新(tag、branch、commit)&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;pull&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;your-branch-name&amp;gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# 同步指定分支，拉取并merge，同名分支&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;pull&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;remote-branch&amp;gt;:&amp;lt;local-branch&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# 拉取并merge指定分支，不同名分支(不推荐)&lt;/span&gt;
+
+git&lt;span class="w"&gt; &lt;/span&gt;fetch&lt;span class="w"&gt;                           &lt;/span&gt;&lt;span class="c1"&gt;# 从远程仓库中拉取所有更新，但不merge&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;fetch&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;your-branch-name&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# 拉取指定分支，不merge，同名分支&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;fetch&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;remote-branch&amp;gt;:&amp;lt;local-branch&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# 拉取指定分支，不merge，不同名分支(不推荐)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# tag同步操作&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;pull&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;--tags&lt;span class="w"&gt;                              &lt;/span&gt;&lt;span class="c1"&gt;# 同步指定分支&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;pull&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;tag-name&amp;gt;&lt;span class="w"&gt;                          &lt;/span&gt;&lt;span class="c1"&gt;# 同步指定tag，并且tag重名&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;pull&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;remote-tag-name&amp;gt;:&amp;lt;local-tag-name&amp;gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# 同步指定tag，并且tag不同名&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;本地到远程的同步操作：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# 分支同步操作&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;push&lt;span class="w"&gt;                        &lt;/span&gt;&lt;span class="c1"&gt;# 当前HEAD指向的分支&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;push&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;brach-name&amp;gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="c1"&gt;# 推送指定分支到origin，同名&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;push&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;local-branch-name&amp;gt;:&amp;lt;remote-branch-name&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# 推送local-branch，不同名&lt;/span&gt;
+
+git&lt;span class="w"&gt; &lt;/span&gt;push&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;tag-name&amp;gt;&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="c1"&gt;# 推送指定tag，同名&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;push&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;local-tag-name&amp;gt;:&amp;lt;remote-tag-name&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# 推送local-tag，不同名&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;push&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;--tags&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="c1"&gt;# 推送所有tag&lt;/span&gt;
+
+git&lt;span class="w"&gt; &lt;/span&gt;push&lt;span class="w"&gt; &lt;/span&gt;--delete&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;branch-name&amp;gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# 删除远程分支操作&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;push&lt;span class="w"&gt; &lt;/span&gt;--delete&lt;span class="w"&gt; &lt;/span&gt;origin&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;tag-name&amp;gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="c1"&gt;# 删除远程tag&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id="32"&gt;3.2&amp;nbsp;远程冲突的解决&lt;/h3&gt;
+&lt;p&gt;远程冲突的发生，往往是因为直接使用&lt;code&gt;git pull&lt;/code&gt;或者&lt;code&gt;git merge&lt;/code&gt;操作时，导致的冲突，原因都可以归结为&lt;code&gt;git merge&lt;/code&gt;操作，解决远程冲突与本地冲突一样，详情间&lt;strong&gt;2.3&lt;/strong&gt;本地合并的冲突问题。&lt;/p&gt;
+&lt;h2 id="4"&gt;4.&amp;nbsp;其他内容&lt;/h2&gt;
+&lt;h3 id="41-gitignoregitattributesgitsubmodule"&gt;4.1&amp;nbsp;gitignore和gitattributes和gitsubmodule&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;.gitignore&lt;/code&gt;文件定义了工作区间内，什么的文件或者文件夹不因该被&lt;code&gt;git&lt;/code&gt;所管理。对于&lt;code&gt;C++&lt;/code&gt;的项目来讲，&lt;code&gt;build&lt;/code&gt;文件夹下的编译内容不应该被管理，&lt;code&gt;.idea&lt;/code&gt;下的&lt;code&gt;IDE&lt;/code&gt;配置不应该被管理等等。此外，&lt;code&gt;.gitignore&lt;/code&gt;文件还支持正则表达式匹配。下面就是一个&lt;code&gt;C++&lt;/code&gt;项目的&lt;code&gt;.gitignore&lt;/code&gt;文件。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# 不同平台下，源文件编译生成的二进制文件&lt;/span&gt;
+*.slo
+*.lo
+*.o
+*.obj
+
+&lt;span class="c1"&gt;# 预编译的头文件&lt;/span&gt;
+*.gch
+*.pch
+
+&lt;span class="c1"&gt;# 编译的动态库文件&lt;/span&gt;
+*.so
+*.dylib
+*.dll
+
+&lt;span class="c1"&gt;# 编译的静态库文件&lt;/span&gt;
+*.lai
+*.la
+*.a
+*.lib
+
+&lt;span class="c1"&gt;# 编译的可执行文件&lt;/span&gt;
+*.exe
+*.out
+*.app
+
+&lt;span class="c1"&gt;# 编译中间文件的文件夹&lt;/span&gt;
+build/
+
+&lt;span class="c1"&gt;# IDE生成的文件&lt;/span&gt;
+.vscode/
+
+&lt;span class="c1"&gt;# 可自行文件的文件夹&lt;/span&gt;
+bin/
+
+&lt;span class="c1"&gt;# 库文件文件夹&lt;/span&gt;
+lib/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;注意，对于不同分支下，可能会存在不同的&lt;code&gt;ignore&lt;/code&gt;操作，比如分支&lt;code&gt;a&lt;/code&gt;里面使用了&lt;code&gt;ros2&lt;/code&gt;完成了某项功能，而分支&lt;code&gt;b&lt;/code&gt;使用&lt;code&gt;ros&lt;/code&gt;完成了某项功能，两个分支&lt;code&gt;.gitignore&lt;/code&gt;应该都需要忽略&lt;code&gt;ros&lt;/code&gt;项目的&lt;code&gt;build devel log&lt;/code&gt;编译文件夹和&lt;code&gt;ros2&lt;/code&gt;项目的&lt;code&gt;build install logs&lt;/code&gt;文件夹，这种情况下，两分支下的&lt;code&gt;.gitignore&lt;/code&gt;应该保持一致，避免在切换分支时的&lt;strong&gt;误添加&lt;/strong&gt;操作。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;.gitattributes&lt;/code&gt;文件主要有以下说明：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;行尾符处理&lt;/strong&gt;，不同的操作系统，对换行符的理解存在差异，可以指定某些系统强相关的文件指定换行符为特定符号，例如指定&lt;code&gt;*.bat&lt;/code&gt;和&lt;code&gt;*.cmd&lt;/code&gt;结尾的windows脚本文件以&lt;code&gt;crlf&lt;/code&gt;结尾，而其余文件指定&lt;code&gt;lf&lt;/code&gt;为结尾，而对于可跨平台的文本文件，则在&lt;code&gt;IDE&lt;/code&gt;指定换行符即可。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;merge&lt;/code&gt;规则指定&lt;/strong&gt;，对于不同的文件，需要指定不同的合并规则，例如&lt;code&gt;*.md&lt;/code&gt;，&lt;code&gt;*.cpp&lt;/code&gt;等文本文件，应该使用&lt;code&gt;merge=text&lt;/code&gt;策略，将内容差异拼接到工作空间的对应文件夹中，进行人为的修改合并即可。而对于&lt;code&gt;binary&lt;/code&gt;文件，其并不会像&lt;code&gt;text&lt;/code&gt;文本文件那些将内容拼接，而是等待用户自行修改，可以选择传入新的文件，也可以使用&lt;code&gt;git checkout --ours&lt;/code&gt;或者&lt;code&gt;git checkout --theirs&lt;/code&gt;来选择当前&lt;code&gt;HEAD&lt;/code&gt;或者其他&lt;code&gt;commit&lt;/code&gt;中的文件。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;文件归档控制&lt;/strong&gt;，&lt;code&gt;git archive&lt;/code&gt;命令可以输出归档后的源文件信息，而某些文件不需要出现在源文件中，例如&lt;code&gt;.gitattributes&lt;/code&gt;文件，&lt;code&gt;.gitignore&lt;/code&gt;文件，文档文件夹，测试文件夹等都不需要归档打包，因此在&lt;code&gt;.gitattributes&lt;/code&gt;文件中，可以使用&lt;code&gt;export-ignore&lt;/code&gt;关键字进行声明；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;一个比较成熟的项目&lt;code&gt;.gitattributes&lt;/code&gt;文件如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# 行尾符处理&lt;/span&gt;
+*&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;text&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;auto
+*.txt&lt;span class="w"&gt; &lt;/span&gt;text
+*.md&lt;span class="w"&gt; &lt;/span&gt;text
+*.cpp&lt;span class="w"&gt; &lt;/span&gt;text
+*.h&lt;span class="w"&gt; &lt;/span&gt;text
+*.py&lt;span class="w"&gt; &lt;/span&gt;text&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;eol&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;lf
+*.sh&lt;span class="w"&gt; &lt;/span&gt;text&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;eol&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;lf
+
+&lt;span class="c1"&gt;# windows脚本文件行尾说明&lt;/span&gt;
+*.bat&lt;span class="w"&gt; &lt;/span&gt;text&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;eol&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;crlf
+*.cmd&lt;span class="w"&gt; &lt;/span&gt;text&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;eol&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;crlf
+
+&lt;span class="c1"&gt;# 二进制文件，即当merge时，采用binary合并策略&lt;/span&gt;
+*.png&lt;span class="w"&gt; &lt;/span&gt;binary
+*.jpg&lt;span class="w"&gt; &lt;/span&gt;binary
+*.pdf&lt;span class="w"&gt; &lt;/span&gt;binary
+*.exe&lt;span class="w"&gt; &lt;/span&gt;binary
+
+&lt;span class="c1"&gt;# 合并策略声明&lt;/span&gt;
+*.conf&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;merge&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;union
+
+&lt;span class="c1"&gt;# 归档控制 - 排除开发相关文件&lt;/span&gt;
+.gitignore&lt;span class="w"&gt; &lt;/span&gt;export-ignore
+.gitattributes&lt;span class="w"&gt; &lt;/span&gt;export-ignore
+
+&lt;span class="c1"&gt;# 归档控制 - 排除测试和文档目录&lt;/span&gt;
+tests/&lt;span class="w"&gt; &lt;/span&gt;export-ignore
+docs/&lt;span class="w"&gt; &lt;/span&gt;export-ignore
+examples/&lt;span class="w"&gt; &lt;/span&gt;export-ignore
+
+&lt;span class="c1"&gt;# 归档控制 - 排除构建相关目录&lt;/span&gt;
+*.log&lt;span class="w"&gt; &lt;/span&gt;export-ignore
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;export-ignore&lt;/code&gt;在归档时，控制着&lt;code&gt;commit&lt;/code&gt;中忽视的内容&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;git archive -o xxx/xxx.tar.gz [commit]&lt;/code&gt;，会查看&lt;code&gt;.gitattributes&lt;/code&gt;文家里面有关的归档操作。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;.gitattributes&lt;/code&gt;文件里面的等号相连之间&lt;strong&gt;不能存在空格&lt;/strong&gt;，否则为非法，就像&lt;code&gt;json&lt;/code&gt;文件里面不能使用单引号表示字符串一样。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;.gitsubmodules&lt;/code&gt;文件用于管理项目下的子模块,其主要在以下几种情况下比较有用:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当子模块和当前项目都是你们自己团队的任务时,你们可以同时对子模块和当前项目进行开发;&lt;/li&gt;
+&lt;li&gt;当子模块为项目依赖的某个开源三方库时,使用子模块操作,可以减少当前项目占用的仓库空间;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;为项目添加一个现有的子模块,可以使用下面的命令实现:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;submodule&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt; &lt;/span&gt;-b&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;branch-name&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;--&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;url&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;path&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;branch-name&lt;/code&gt;为模块依赖的分支名称&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;url&lt;/code&gt;为模块对应的远程仓库地址&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;path&lt;/code&gt;为模块在项目工作空间存放的路径位置&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当添加了某个子模块后,应该如何删除呢?&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;submodule&lt;span class="w"&gt; &lt;/span&gt;deinit&lt;span class="w"&gt; &lt;/span&gt;--&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;path&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# 取消子模块与当前工作区间的关联&lt;/span&gt;
+rm&lt;span class="w"&gt; &lt;/span&gt;-rf&lt;span class="w"&gt; &lt;/span&gt;.git/modules/&amp;lt;path&amp;gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="c1"&gt;# 删除.git下对于子模块的存储逻辑&lt;/span&gt;
+nano&lt;span class="w"&gt; &lt;/span&gt;.gitmodules&lt;span class="w"&gt;               &lt;/span&gt;&lt;span class="c1"&gt;# 针对性的处理.gitmodules文件,对相关模型进行删除&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;当模块中的内容发生改变时,项目和子模块如何使用&lt;code&gt;git&lt;/code&gt;进行管理呢?&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;submodule-path&amp;gt;
+git&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt; &lt;/span&gt;.
+git&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;commit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;m&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;lt;module-commit-message&amp;gt;&amp;quot;&lt;/span&gt;
+&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;project-path&amp;gt;
+git&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt; &lt;/span&gt;.
+git&lt;span class="w"&gt; &lt;/span&gt;commit&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;lt;project-sync-module-message&amp;gt;&amp;quot;&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;push&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="c1"&gt;# 同步更新子模块远程仓库和项目远程仓库&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;当&lt;code&gt;clone&lt;/code&gt;某个带有子模块的项目时,应该同步&lt;code&gt;clone&lt;/code&gt;它的子模块呢?&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;project-with-submodule&amp;gt;
+git&lt;span class="w"&gt; &lt;/span&gt;submodule&lt;span class="w"&gt; &lt;/span&gt;update&lt;span class="w"&gt; &lt;/span&gt;--init&lt;span class="w"&gt; &lt;/span&gt;--recursive
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;--init&lt;/code&gt; 初始化子模块和项目关联&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--recursive&lt;/code&gt; 递归的处理所有子模块下的子模块&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="42-diff"&gt;4.2&amp;nbsp;diff操作查看文件差异&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;diff&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;commit&amp;gt;&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="c1"&gt;# 查看工作区和某次commit之间的差异&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;diff&lt;span class="w"&gt; &lt;/span&gt;--staged&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;commit&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# 查看暂存区和某次commit之间的差异，默认为HEAD&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;diff&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;commit-a&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;commit-b&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;--&lt;span class="w"&gt; &lt;/span&gt;file&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# 查看两个commit之间的file差异&lt;/span&gt;
+git&lt;span class="w"&gt; &lt;/span&gt;diff&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;commit-a&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;commit-b&amp;gt;&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="c1"&gt;# 查看两个commot之间所有文件差异&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;针对两个&lt;code&gt;commit&lt;/code&gt;之间的差异，&lt;code&gt;&amp;lt;commit-a&amp;gt;&lt;/code&gt;为原始&lt;code&gt;commit&lt;/code&gt;而&lt;code&gt;&amp;lt;commit-b&amp;gt;&lt;/code&gt;为修改&lt;code&gt;commit&lt;/code&gt;，相当于查看&lt;code&gt;&amp;lt;commit-b&amp;gt;&lt;/code&gt;相比与&lt;code&gt;&amp;lt;commit-a&amp;gt;&lt;/code&gt;之间修改了什么内容。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--stat&lt;/code&gt;可选参数可以输出统计信息，即显示某个文件修改的行数，可以快速查看那些文件作了多少的修改，比较直观。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="43-log"&gt;4.3&amp;nbsp;log操作查看某次提交的提交记录&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;当直接使用&lt;code&gt;git log&lt;/code&gt;时，会将&lt;code&gt;HEAD&lt;/code&gt;指向的&lt;code&gt;commit&lt;/code&gt;对应的所有父级（包含其本身）对应的&lt;code&gt;commit&lt;/code&gt;对应的&lt;code&gt;hash&lt;/code&gt;值和&lt;code&gt;commit content&lt;/code&gt;内容打印出来（包括时间、作者和邮箱信息）。&lt;/li&gt;
+&lt;li&gt;注意，这里的父级不仅包含同一&lt;code&gt;branch&lt;/code&gt;下的&lt;code&gt;commit&lt;/code&gt;关系，还包含了&lt;code&gt;merge&lt;/code&gt;后，&lt;code&gt;merge&lt;/code&gt;节点对应的&lt;code&gt;commit&lt;/code&gt;的父子关系。&lt;/li&gt;
+&lt;li&gt;当&lt;code&gt;git log &amp;lt;commit/branch/tag&amp;gt;&lt;/code&gt;时，对应的都是其指向的&lt;code&gt;commit&lt;/code&gt;对应的所有父级（包含其本身）的&lt;code&gt;commit&lt;/code&gt;节点信息。&lt;/li&gt;
+&lt;/ul&gt;</content><category term="随笔"></category><category term="git"></category></entry><entry><title>如何使用cmake构建一个自定义的可安装的库呢？</title><link href="https://sunshanlu.github.io/sunshanlu/cmake-build-your-lib" rel="alternate"></link><published>2025-03-01T00:00:00+08:00</published><updated>2025-03-01T00:00:00+08:00</updated><author><name>孙善路-github</name></author><id>tag:sunshanlu.github.io,2025-03-01:/sunshanlu/cmake-build-your-lib</id><summary type="html">&lt;h2 id="_1"&gt;背景&lt;/h2&gt;
 &lt;p&gt;我觉得所有学习过某种编程语言的人，或多或少都希望自己构建一个可使用&lt;strong&gt;标准化流程&lt;/strong&gt;安装的三方库。当然我也不 …&lt;/p&gt;</summary><content type="html">&lt;h2 id="_1"&gt;背景&lt;/h2&gt;
 &lt;p&gt;我觉得所有学习过某种编程语言的人，或多或少都希望自己构建一个可使用&lt;strong&gt;标准化流程&lt;/strong&gt;安装的三方库。当然我也不例外，我平时的大部分精力都会放在SLAM的学习上，我的想法是做一个简单方便的SLAM可视化小工具，用来帮助自己快速验证一个SLAM算法的效果和可行性。几个月前，我确实把一个名为&lt;a href="https://github.com/sunshanlu/SLAM_VIEWER"&gt;SLAM_VIEWER&lt;/a&gt;的小工具开源了出来。为了方便自己也是为了方便大家的使用，我希望我写的三方库可以像主流的三方库一样，能够使用一个&lt;strong&gt;标准化的编译和安装&lt;/strong&gt;流程，并能够在cmake中很方便地导入使用。在我查阅了cmake官方文档并奴役了许多AI后，得到了一套流程化的解决方案：&lt;/p&gt;
 &lt;h2 id="_2"&gt;解决方案&lt;/h2&gt;
@@ -108,7 +408,7 @@
 &lt;/ul&gt;
 &lt;p&gt;下面是&lt;code&gt;slam_viewerTargets.cmake&lt;/code&gt;文件的部分截图，这部分内容相当&lt;strong&gt;重要&lt;/strong&gt;，或者中可以通过这个&lt;code&gt;xxxTargets.cmake&lt;/code&gt;文件来找到三方库的&lt;code&gt;Target&lt;/code&gt;信息，并且可以明确这个&lt;code&gt;Target&lt;/code&gt;的依赖关系。&lt;/p&gt;
 &lt;div align="center"&gt;
-    &lt;img src="https://sunshanlu.github.io/sunshanlu/images/target-cmake.png" alt="xxxTargets.cmake" width="80%"&gt;
+    &lt;img src="https://sunshanlu.github.io/sunshanlu/images/target-cmake.png" alt="xxxTargets.cmake" width="100%"&gt;
 &lt;/div&gt;
 
 &lt;h3 id="2-target"&gt;2.&amp;nbsp;安装导出的Target依赖文件到指定位置&lt;/h3&gt;

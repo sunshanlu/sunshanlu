@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="https://sunshanlu.github.io/sunshanlu/theme/css/elegant.prod.9e9d5ce754.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="https://sunshanlu.github.io/sunshanlu/theme/css/custom.css" media="screen">
+
+        <link rel="dns-prefetch" href="//fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+
+        <meta name="google-site-verification" content="UpDPegqFb_TnOIJbDp5ud8wVncaUoUB-fJoQyiiAdmg" />        <meta name="msvalidate.01" content="A86784EE624E2187E0AC969B764CE1E1" />        <meta name="author" content="孙善路-github" />
+
+        <meta name="description" content="1. 端到端的IA-YOLO原理 目前项目需要实现在恶劣环境下实现目标检测功能，通过实验发现，目标检测在雨、雾、扬尘等恶劣光照条件 …
+" />
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content="DL, YOLO, DL, yolo, " />
+
+<meta property="og:title" content="IA-YOLO原理 "/>
+<meta property="og:url" content="https://sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO" />
+<meta property="og:description" content="1. 端到端的IA-YOLO原理 目前项目需要实现在恶劣环境下实现目标检测功能，通过实验发现，目标检测在雨、雾、扬尘等恶劣光照条件 …" />
+<meta property="og:site_name" content="SSL的个人Blog" />
+<meta property="og:article:author" content="孙善路-github" />
+<meta property="og:article:published_time" content="2025-04-02T00:00:00+08:00" />
+<meta name="twitter:title" content="IA-YOLO原理 ">
+<meta name="twitter:description" content="1. 端到端的IA-YOLO原理 目前项目需要实现在恶劣环境下实现目标检测功能，通过实验发现，目标检测在雨、雾、扬尘等恶劣光照条件 …">
+
+        <title>IA-YOLO原理  · SSL的个人Blog
+</title>
+        <link rel="shortcut icon" href="https://sunshanlu.github.io/sunshanlu/theme/images/favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-152x152.png" type="image/png" />
+        <link rel="apple-touch-icon" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon.png"  type="image/png" />
+        <link rel="apple-touch-icon" sizes="57x57" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-57x57.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-72x72.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="76x76" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-76x76.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-114x114.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-120x120.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-144x144.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-152x152.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-180x180.png" type="image/png" />
+        <link href="https://sunshanlu.github.io/sunshanlu/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="SSL的个人Blog - Full Atom Feed" />
+
+
+
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    </head>
+    <body>
+        <div id="content">
+            <div class="navbar navbar-static-top">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="brand" href="https://sunshanlu.github.io/sunshanlu/"><span class=site-name>SSL的个人Blog</span></a>
+                        <div class="nav-collapse collapse">
+                            <ul class="nav pull-right top-menu">
+                                <li >
+                                    <a href=
+                                       https://sunshanlu.github.io/sunshanlu
+                                    >Home</a>
+                                </li>
+                                <li ><a href="https://sunshanlu.github.io/sunshanlu/categories">Categories</a></li>
+                                <li ><a href="https://sunshanlu.github.io/sunshanlu/tags">Tags</a></li>
+                                <li ><a href="https://sunshanlu.github.io/sunshanlu/archives">Archives</a></li>
+                                <li><form class="navbar-search" action="https://sunshanlu.github.io/sunshanlu/search" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span1"></div>
+                    <div class="span10">
+<article itemscope>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+        <h1>
+            <a href="https://sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO">
+                <span class="caps">IA</span>-YOLO原理
+            </a>
+        </h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+    <div class="span2 table-of-content">
+        <nav>
+        <h4>Contents</h4>
+        <div class="toc">
+<ul>
+<li><a href="#1-ia-yolo">1. 端到端的IA-YOLO原理</a><ul>
+<li><a href="#11-dip">1.1 可微的图像处理模块DIP</a></li>
+<li><a href="#12-cnn-ppyolo">1.2 <span class="caps">CNN</span>-PP和YOLO混合训练过程</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </nav>
+    </div>
+    <div class="span8 article-content">
+            
+            
+<h2 id="1-ia-yolo">1. 端到端的IA-YOLO原理</h2>
+<p>目前项目需要实现在恶劣环境下实现目标检测功能，通过实验发现，目标检测在雨、雾、扬尘等恶劣光照条件下性能骤降，而使用传统方法先增强图像再进行深度学习检测往往存在任务冲突与信息损失。最近通过查找资料发现，2022年发表的IA-YOLO方法提出了一种端到端自适应框架通过<strong>可微图像处理模块DIP</strong>和 <strong>​​<span class="caps">CNN</span>-PP模块​​参数预测</strong> ，并使用与<code>yolov3</code>混合优化实现恶劣环境下效率与精度的提高。下面重点对<code>IA-YOLO</code>中的<code>DIP</code>和<code>CNN-PP</code>模块进行介绍。</p>
+<h3 id="11-dip">1.1 可微的图像处理模块DIP</h3>
+<p>DIP模块的设计原则如下：</p>
+<ul>
+<li>与像素操作的<strong>可微性</strong>，支持梯度的反向传播，实现与检测器的端到端训练；</li>
+<li>与<strong>分辨率</strong>无关，支持任意分辨率的输入；</li>
+</ul>
+<p>可微的图像处理模块主要由去雾滤波器、逐像素滤波器（白平衡，<code>gamma</code>，<code>tone</code>曲线，对比度）和锐化滤波器组成。</p>
+<p><code>WB</code>白平衡操作由3个参数组成，分别是<span class="math">\(w_r\)</span>，<span class="math">\(w_g\)</span>和<span class="math">\(w_b\)</span>。对图像的作用可以由下面的公式描述：</p>
+<div class="math">$$
+    P_o = (w_rr_i,w_gg_i,w_bb_i)
+$$</div>
+<p><code>gamma</code>操作由1个参数<span class="math">\(\gamma\)</span>描述，当<span class="math">\(\gamma &lt; 1\)</span>时候，暗部细节会增强，图像整体会变亮，这种情况为<strong>伽玛压缩</strong>，主要应用在低光照图像增强；当<span class="math">\(\gamma &gt; 1\)</span>时候，亮部细节增强，整体变暗，这种情况为<strong>伽玛展开</strong>，主要应用在高光抑制、对比度提升。它可以由下面的公式描述：</p>
+<div class="math">$$
+    P_o = P_i^{\gamma}
+$$</div>
+<p><code>Tone</code>曲线又叫色调调整曲线，在<code>IA-YOLO</code>中设计成为由<code>8</code>个参数组成的分段线性曲线。从而实现不同颜色通道的映射。</p>
+<p><code>Contrast</code>对比度操作，使用参数<span class="math">\(\alpha\)</span>进行调节，对比度可以<strong>描述图像的最大和最小亮度之间的关系</strong>，当对比度增大时，图像的亮暗分布比较明显,可以由下面的公式描述：</p>
+<div class="math">$$
+\begin{align}
+    &amp;P_o &amp;=&amp; \alpha \cdot En(P_i) + (1-\alpha)\cdot P_i\\
+    &amp;Lum(P_i)&amp;=&amp;0.27 r_i + 0.67 g_i + 0.06 b_i\\
+    &amp;EnLum(P_i) &amp;=&amp; \frac{1}{2}(1-\cos(\pi \times(Lum(P_i))))\\
+    &amp;En(P_i)&amp;=&amp;P_i\times \frac{EnLum(P_i)}{Lum(P_i)}
+\end{align}
+$$</div>
+<p><code>Sharpen</code>图像锐化操作，可以突出显示图像的细节，锐化过程可以由下面的公式进行描述，其中<span class="math">\(I(x)\)</span>是输入图像，<span class="math">\(G(I(x))\)</span>表示高斯滤波器，<span class="math">\(\lambda\)</span>是一个正的比例因子。</p>
+<div class="math">$$
+    F(x, \lambda)=I(x)+\lambda(I(x)-G(I(x)))
+$$</div>
+<p>论文参考暗通道先验方法的启发，设计了具有可学习参数的去雾滤波器，由大气散射模型推到得到，去雾滤波器可以由下面的公式描述，其中，<span class="math">\(J(x)\)</span>代表干净图像，<span class="math">\(I(x)\)</span>代表雾化之后的图像，A为全球大气光，由<span class="math">\(I(x)\)</span>对应的最亮的1000个像素平均值估计。参数<span class="math">\(\omega\)</span>为去雾滤波的学习参数。</p>
+<div class="math">$$
+\begin{align}
+    &amp;I(x)&amp;=&amp;J(x)t(x) + A(1-t(x))\\
+    &amp;t(x)&amp;=&amp;1-\omega \min_C(\min_{x}\frac{I^C(x)}{A^C})
+\end{align}
+$$</div>
+<p>其前向传播过程可以由图下图描述：</p>
+<div align="center">
+<image src="https://sunshanlu.github.io/sunshanlu/images/ia-yolo-forwad.png" width="1000"/>
+</div>
+<h3 id="12-cnn-ppyolo">1.2 <span class="caps">CNN</span>-PP和YOLO混合训练过程</h3>
+<div align="center">
+<image src="https://sunshanlu.github.io/sunshanlu/images/ia-yolo.png" width="1000"/>
+</div>
+<p>整个训练过程可以由上面的图进行描述，以有雾的场景为例，<code>CNN-PP</code>模块的目的是通过<strong>了解图像的全局内容</strong>，如亮度、颜色、色调，以及雾的程度，来预测<code>DIP</code>模块的参数。因此，降采样图像足以估计这些信息，从而<strong>大大节省了计算成本</strong>。对给定任何分辨率的输入图像，<code>IA-YOLO</code>简单地使用双线性插值将其降采样到<code>256×256</code>分辨率。</p>
+<p><code>CNN-PP</code>网络由5个卷积层和2个全连通层组成。每个卷积块包括一个3×3的卷积层，<code>stride</code>为2和一个<code>Leaky Relu</code>激活函数。最终的全连接层输出DIP模块的超参数。这五个卷积层的输出通道分别为16、32、32、32和32。当参数总数为15个时，<code>CNN-PP</code>模型只包含<code>165K</code>个参数。</p>
+<p>最后，使用<code>yolov3</code>的损失函数，来联合优化<code>yolo</code>和<code>CNN-PP</code>模型。</p>
+<p>其核心优势：</p>
+<ul>
+<li><strong>强大的自适应能力</strong>​​：同一模型处理正常/恶劣天气，无性能下降（VOC_norm测试集mAP 73.23%）</li>
+<li><strong>高效的计算</strong>：<code>CNN-PP</code>网络使用将采样后的图像作为输入，仅增加了少量参数，优于加深网络层数的方法。</li>
+</ul>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: '#145402 ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+
+
+             
+ 
+                <p id="post-share-links">
+    喜欢这篇文章吗？喜欢就分享吧:
+      <a href="https://twitter.com/intent/tweet?text=IA-YOLO%E5%8E%9F%E7%90%86&url=https%3A//sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO&hashtags=dl,yolo" target="_blank" rel="nofollow noopener noreferrer" title="Share on Twitter">Twitter</a>
+ ❄       <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A//sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO" target="_blank" rel="nofollow noopener noreferrer" title="Share on Facebook">Facebook</a>
+ ❄       <a href="mailto:?subject=IA-YOLO%E5%8E%9F%E7%90%86&amp;body=https%3A//sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO" target="_blank" rel="nofollow noopener noreferrer" title="Share via Email">Email</a>
+
+                <hr />
+    <div class="author-blurb">
+        <a href="https://github.com/sunshanlu" target="_blank" rel="nofollow noopener noreferrer">
+            <img src=https://avatars.githubusercontent.com/u/78467062 alt="孙善路-github Avatar" title="孙善路-github">
+            <span class="author-name">孙善路-github</span>
+        </a>
+        对SLAM和DL感兴趣的理工男
+    </div>
+    <div class="author-blurb">
+        <a href="https://space.bilibili.com/489032586" target="_blank" rel="nofollow noopener noreferrer">
+            <img src=https://sunshanlu.github.io/sunshanlu/images/avatars/sunshanlu.png alt="孙善路-bilibili Avatar" title="孙善路-bilibili">
+            <span class="author-name">孙善路-bilibili</span>
+        </a>
+        对SLAM和DL感兴趣的理工男
+    </div>
+
+            
+
+
+
+
+
+
+
+<section>
+    <h6 style="display:none;">Comments</h6>
+    <p id="comment-message">有什么问题吗，有任何问题欢迎你在下面评论留言或者邮件联系我！ </p>
+
+    <div class="accordion" id="accordion2">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle disqus-comment-count comment-count collapsed"
+                   data-toggle="collapse"
+                   data-parent="#accordion2"
+                   href="https://sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO#comment_thread"
+                   id="comment-accordion-toggle">
+                    Comments
+                </a>
+            </div>
+            <div id="comment_thread" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    <div class="comments">
+
+                        <script src="https://utteranc.es/client.js"
+        data-repo="sunshanlu/sunshanlu"
+        data-issue-term="https://sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO"
+        data-label="✨💬✨"
+        data-theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+            <hr/>
+            <aside>
+            <nav>
+            <ul class="articles-timeline">
+                <li class="previous-article">« <a href="https://sunshanlu.github.io/sunshanlu/cmake-build-your-lib" title="Previous: 如何使用cmake构建一个自定义的可安装的库呢？">如何使用cmake构建一个自定义的可安装的库呢？</a></li>
+                <li class="next-article"><a href="https://sunshanlu.github.io/sunshanlu/git-learn" title="Next: git工具使用总结">git工具使用总结</a> »</li>
+            </ul>
+            </nav>
+            </aside>
+        </div>
+        <section id="article-sidebar" class="span2">
+            <h4>Published</h4>
+            <time itemprop="dateCreated" datetime="2025-04-02T00:00:00+08:00">2025-04-02</time>
+            <h4>Category</h4>
+            <a class="category-link" href="https://sunshanlu.github.io/sunshanlu/categories#dl-yolo-ref">DL, yolo</a>
+            <h4>Tags</h4>
+            <ul class="list-of-tags tags-in-article">
+                <li><a href="https://sunshanlu.github.io/sunshanlu/tags#dl-ref">DL
+                    <span class="superscript">1</span>
+</a></li>
+                <li><a href="https://sunshanlu.github.io/sunshanlu/tags#yolo-ref">YOLO
+                    <span class="superscript">1</span>
+</a></li>
+            </ul>
+<h4>Contact Me</h4>
+<div id="sidebar-social-link">
+    <a href="https://github.com/sunshanlu" title="Github 页面" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="GitHub" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#1B1817"/><path fill="#fff" d="M335 499c14 0 12 17 12 17H165s-2-17 12-17c13 0 16-6 16-12l-1-50c-71 16-86-28-86-28-12-30-28-37-28-37-24-16 1-16 1-16 26 2 40 26 40 26 22 39 59 28 74 22 2-17 9-28 16-35-57-6-116-28-116-126 0-28 10-51 26-69-3-6-11-32 3-67 0 0 21-7 70 26 42-12 86-12 128 0 49-33 70-26 70-26 14 35 6 61 3 67 16 18 26 41 26 69 0 98-60 120-117 126 10 8 18 24 18 48l-1 70c0 6 3 12 16 12z"/></svg>
+    </a>
+    <a href="mailto:ssl2001@126.com" title="Email Me" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="Mail" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#328cff"/><path d="m250 186c-46 0-69 35-69 74 0 44 29 72 68 72 43 0 73-32 73-75 0-44-34-71-72-71zm-1-37c30 0 57 13 77 33 0-22 35-22 35 1v150c-1 10 10 16 16 9 25-25 54-128-14-187-64-56-149-47-195-15-48 33-79 107-49 175 33 76 126 99 182 76 28-12 41 26 12 39-45 19-168 17-225-82-38-68-36-185 67-248 78-46 182-33 244 32 66 69 62 197-2 246-28 23-71 1-71-32v-11c-20 20-47 32-77 32-57 0-108-51-108-108 0-58 51-110 108-110" fill="#fff"/></svg>
+    </a>
+    <a href="/feeds/all.atom.xml" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="RSS" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#f80"/><circle cx="145" cy="367" r="35" fill="#fff"/><path fill="none" stroke="#fff" stroke-width="60" d="M109 241c89 0 162 73 162 162M109 127c152 0 276 124 276 276"/></svg>
+    </a>
+</div>
+            
+
+
+
+
+
+            
+
+
+
+
+
+        </section>
+</div>
+</article>
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe.
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides.
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo https://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>                    </div>
+                    <div class="span1"></div>
+                </div>
+            </div>
+        </div>
+<footer>
+    <div>
+        Content licensed under <a rel="license nofollow noopener noreferrer"
+    href="http://creativecommons.org/licenses/by/4.0/" target="_blank">
+    Creative Commons Attribution 4.0 International License</a>.
+    </div>
+
+    <div>
+        <span class="site-name">SSL的个人Blog</span> - 记录开发随笔
+    </div>
+
+
+
+    <div id="fpowered">
+        Powered by: <a href="http://getpelican.com/" title="Pelican Home Page" target="_blank" rel="nofollow noopener noreferrer">Pelican</a>
+        Theme: <a href="https://elegant.oncrashreboot.com/" title="Theme Elegant Home Page" target="_blank" rel="nofollow noopener noreferrer">Elegant</a>
+        Hosted on:
+        <a href=https://www.github.com/ target="_blank" rel="nofollow noopener noreferrer">
+            Github
+        </a>
+    </div>
+</footer>            <script src="//code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script src="https://sunshanlu.github.io/sunshanlu/theme/js/elegant.prod.9e9d5ce754.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    <script>
+    (function () {
+        if (window.location.hash.match(/^#comment-\d+$/)) {
+            $('#comment_thread').collapse('show');
+        }
+    })();
+    window.onhashchange=function(){
+        if (window.location.hash.match(/^#comment-\d+$/))
+            window.location.reload(true);
+    }
+    $('#comment_thread').on('shown', function () {
+        var link = document.getElementById('comment-accordion-toggle');
+        var old_innerHTML = link.innerHTML;
+        $(link).fadeOut(200, function() {
+            $(this).text('Click here to hide comments').fadeIn(200);
+        });
+        $('#comment_thread').on('hidden', function () {
+            $(link).fadeOut(200, function() {
+                $(this).text(old_innerHTML).fadeIn(200);
+            });
+        })
+    })
+</script>
+
+    </body>
+    <!-- Theme: Elegant built for Pelican
+        License : MIT -->
+</html>

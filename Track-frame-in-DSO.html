@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="https://sunshanlu.github.io/sunshanlu/theme/css/elegant.prod.9e9d5ce754.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="https://sunshanlu.github.io/sunshanlu/theme/css/custom.css" media="screen">
+
+        <link rel="dns-prefetch" href="//fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+
+        <meta name="google-site-verification" content="UpDPegqFb_TnOIJbDp5ud8wVncaUoUB-fJoQyiiAdmg" />        <meta name="msvalidate.01" content="A86784EE624E2187E0AC969B764CE1E1" />        <meta name="author" content="孙善路-github" />
+
+        <meta name="description" content="DSO中的前端跟踪过程相对简单，其主要涵盖跟踪前处理、跟踪过程和跟踪后处理三部分内容。下面我会对这三部分进行拆解并对其中的细节进行介绍 …
+" />
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content="vSLAM, DSO, Robot, DSO, " />
+
+<meta property="og:title" content="DSO的前端跟踪 "/>
+<meta property="og:url" content="https://sunshanlu.github.io/sunshanlu/Track-frame-in-DSO" />
+<meta property="og:description" content="DSO中的前端跟踪过程相对简单，其主要涵盖跟踪前处理、跟踪过程和跟踪后处理三部分内容。下面我会对这三部分进行拆解并对其中的细节进行介绍 …" />
+<meta property="og:site_name" content="SSL的个人Blog" />
+<meta property="og:article:author" content="孙善路-github" />
+<meta property="og:article:published_time" content="2025-02-18T00:00:00+08:00" />
+<meta name="twitter:title" content="DSO的前端跟踪 ">
+<meta name="twitter:description" content="DSO中的前端跟踪过程相对简单，其主要涵盖跟踪前处理、跟踪过程和跟踪后处理三部分内容。下面我会对这三部分进行拆解并对其中的细节进行介绍 …">
+
+        <title>DSO的前端跟踪  · SSL的个人Blog
+</title>
+        <link rel="shortcut icon" href="https://sunshanlu.github.io/sunshanlu/theme/images/favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-152x152.png" type="image/png" />
+        <link rel="apple-touch-icon" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon.png"  type="image/png" />
+        <link rel="apple-touch-icon" sizes="57x57" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-57x57.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-72x72.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="76x76" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-76x76.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-114x114.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-120x120.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-144x144.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-152x152.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-180x180.png" type="image/png" />
+        <link href="https://sunshanlu.github.io/sunshanlu/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="SSL的个人Blog - Full Atom Feed" />
+
+
+
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    </head>
+    <body>
+        <div id="content">
+            <div class="navbar navbar-static-top">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="brand" href="https://sunshanlu.github.io/sunshanlu/"><span class=site-name>SSL的个人Blog</span></a>
+                        <div class="nav-collapse collapse">
+                            <ul class="nav pull-right top-menu">
+                                <li >
+                                    <a href=
+                                       https://sunshanlu.github.io/sunshanlu
+                                    >Home</a>
+                                </li>
+                                <li ><a href="https://sunshanlu.github.io/sunshanlu/categories">Categories</a></li>
+                                <li ><a href="https://sunshanlu.github.io/sunshanlu/tags">Tags</a></li>
+                                <li ><a href="https://sunshanlu.github.io/sunshanlu/archives">Archives</a></li>
+                                <li><form class="navbar-search" action="https://sunshanlu.github.io/sunshanlu/search" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span1"></div>
+                    <div class="span10">
+<article itemscope>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+        <h1>
+            <a href="https://sunshanlu.github.io/sunshanlu/Track-frame-in-DSO">
+                DSO的前端跟踪
+            </a>
+        </h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+    <div class="span2 table-of-content">
+        <nav>
+        <h4>Contents</h4>
+        <div class="toc">
+<ul>
+<li><a href="#1">1. 参考帧确定和跟踪参考点构建（跟踪前处理）</a><ul>
+<li><a href="#11">1.1 金字塔参考点初构建</a></li>
+<li><a href="#12">1.2 金字塔参考点膨胀</a></li>
+</ul>
+</li>
+<li><a href="#2">2. 实施跟踪过程（构建模型并优化）</a><ul>
+<li><a href="#21">2.1 构建优化初值假设库</a></li>
+<li><a href="#22">2.2 基于某种假设的跟踪尝试</a><ul>
+<li><a href="#221">2.2.1 跟踪模型</a></li>
+<li><a href="#222">2.2.2 雅可比矩阵构建</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#3">3. 关键帧判断（跟踪后处理）</a></li>
+</ul>
+</div>
+        </nav>
+    </div>
+    <div class="span8 article-content">
+            
+            
+<p>DSO中的前端跟踪过程相对简单，其主要涵盖跟踪前处理、跟踪过程和跟踪后处理三部分内容。下面我会对这三部分进行拆解并对其中的细节进行介绍。</p>
+<h2 id="1">1. 参考帧确定和跟踪参考点构建（跟踪前处理）</h2>
+<p>当DSO系统的初始化完成后，目前整个系统中会有<strong>两个关键帧</strong>和<strong>若干激活地图点</strong>，当然激活地图点的<code>host</code>帧为初始化参考帧。和初始化过程类似，由于新来的一帧<code>frame</code>的位姿不明确，需要一个相对鲁邦的位姿估计方法，和初始化过程一样，<code>DSO</code>的前端跟踪部分采用的也是基于金字塔由粗至精的跟踪方法，因此需要确定一个跟踪参考帧和若干跟踪地图点。</p>
+<p>在介绍参考点构建之前，我先明确一个问题，就是<code>DSO</code>系统会维护一个<strong>关键帧队列</strong>，即<code>DSO</code>中的关键帧<strong>滑动窗口</strong>，至于这个滑窗的维护策略，我会在后续文章中进行介绍。</p>
+<h3 id="11">1.1 金字塔参考点初构建</h3>
+<p><code>DSO</code>使用了最新关键帧作为跟踪过程中的参考关键帧。为了提高跟踪鲁棒性，滑动窗口中的所有激活地图点都会投影到最新关键帧的第0层上。正如下面这个图所描述的那样，来初始化跟踪参考关键帧上第0层的像素点逆深度。</p>
+<p>在投影过程中，<code>DSO</code>系统使用了四舍五入的方式来计算投影点的像素位置，因此存在多个点投影到同一个像素位置的情况，这里使用<a href="https://sunshanlu.github.io/dso_ssl/Initialization-of-DSO#33">DSO中的初始化的3.3节</a>讲到的高斯归一化积解决同像素位置不同逆深度的问题。</p>
+<div align="center">
+<img src="https://sunshanlu.github.io/sunshanlu/images/point-build.png" width="70%"/>
+</div>
+<p>根据跟踪参考帧第0层上的像素逆深度点，向上层进行投影得到参考帧第1层的像素逆深度点，以此类推最终得到初步的跟踪参考点逆深度，这里同样会存在多对一的情况，依然使用高斯归一化积解决。</p>
+<h3 id="12">1.2 金字塔参考点膨胀</h3>
+<p>除了使用上述投影方式，<code>DSO</code>的源码中使用了膨胀手段来进一步增加参考点的数目，正如下图所示，紫色的位置代表某个金字塔层级上没有逆深度点的像素位置，而青色位置代表膨胀遍历位置，即遍历青色位置试图寻找一个有逆深度的像素点，然后使用取均值的方式再紫色位置膨胀出逆深度点出来。下图是<code>DSO</code>中采用的两种膨胀遍历方式，左侧是金字塔0层和1层的膨胀方式，右侧是其他层的膨胀方式。</p>
+<div align="center">
+<img src="https://sunshanlu.github.io/sunshanlu/images/point-swell.png" width="70%"/>
+</div>
+<div class="admonition note">
+<p class="admonition-title">膨胀点原因猜测</p>
+<p>这里膨胀点的方式和我在<a href="https://sunshanlu.github.io/dso_ssl/Optimization-Model-DSO">DSO中的优化模型</a>文章中提到的<code>pattern</code>类似，<code>pattern</code>的作用是使用周围像素共享中心点的逆深度，以此来增强灰度不变形假设的可行性。个人猜测<code>DSO</code>在这里使用膨胀的原因和<code>pattern</code>类似，尝试以这种方式提高假设的可靠性。</p>
+</div>
+<h2 id="2">2. 实施跟踪过程（构建模型并优化）</h2>
+<p>有了参考帧和待跟踪的参考点后，就可以实施前端跟踪过程了。除了使用图像金字塔从粗到精的跟踪手段外，<code>DSO</code>还拓展了不同的运动假设来构建优化初值假设库，试图找到一个最优初值，从而加速优化过程，提高达到最优值的可能性。</p>
+<h3 id="21">2.1 构建优化初值假设库</h3>
+<p><code>DSO</code>考虑了<strong>恒速运动</strong>、<strong>倍数运动</strong>、<strong>半速运动</strong>和<strong>相对参考帧静止</strong>的模型假设，除此之外<code>DSO</code>还做了<strong>小旋转运行假设</strong>，所有的运动假设模型我都在下面的图片里面表示了出来，共有<span class="math">\((3 * 3 * 3 - 1) * 3 + 4\)</span>种假设结果。其中待优化帧的光度仿射参数<span class="math">\(a_j\)</span>和<span class="math">\(b_j\)</span>直接使用的上一帧光度仿射参数<span class="math">\(a_{last}\)</span>和<span class="math">\(b_{last}\)</span>作为初值，这是因为自然条件下，相邻帧之间的光度仿射参数变化非常小。</p>
+<div align="center">
+<img src="https://sunshanlu.github.io/sunshanlu/images/pose-assume.png" width="95%"/>
+</div>
+<h3 id="22">2.2 基于某种假设的跟踪尝试</h3>
+<h4 id="221">2.2.1 跟踪模型</h4>
+<p>某种位姿假设初值<span class="math">\(T_{cr}\)</span>确定后，<code>DSO</code>前端跟踪部分会使用下面的公式构造优化目标函数。</p>
+<div class="math">$$
+E_{l}=\sum_{p_i \in ref}{||r_k||_{\gamma}}
+\\
+r_k=I_j[p_j]-\frac{t_j e^{a_i}}{t_i e^{a_j}}I_i[p_i]-(b_j - \frac{t_j e^{a_i}}{t_i e^{a_j}} b_i)
+$$</div>
+<p>其中：</p>
+<ul>
+<li><span class="math">\(p_i\)</span>为跟踪参考关键帧<code>ref frame</code><span class="math">\(l\)</span>层上，带有逆深度的参考点。</li>
+<li><span class="math">\(p_j\)</span>为使用当前优化参数投影到当前帧<span class="math">\(l\)</span>层上的点。</li>
+<li><span class="math">\(E_l\)</span>为<span class="math">\(l\)</span>层金字塔上的能量值，同样也是优化目标函数。</li>
+</ul>
+<p>与<a href="https://sunshanlu.github.io/dso_ssl/Optimization-Model-DSO">DSO中的优化模型</a>文章中的模型对比发现，跟踪模型并没有使用<code>pattern</code>，这部分也印证了我在1.2小节中的猜测。</p>
+<h4 id="222">2.2.2 雅可比矩阵构建</h4>
+<p>虽然模型没有使用<code>pattern</code>，但是残差部分是一致的，因此雅可比矩阵的构建也完全一致。在前端位姿估计部分，不涉及地图点逆深度的优化问题，因此待优化量主要有当前帧相对于跟踪参考帧的位姿<span class="math">\(T_{cr}\)</span>以及当前帧的光度仿射参数<span class="math">\(a_j\)</span>和<span class="math">\(b_j\)</span>，对于<span class="math">\(a_j\)</span>和<span class="math">\(b_j\)</span>来讲，它们的求导是平凡的，而相对位姿<span class="math">\(T_{cr}\)</span>的求导，我在文章<a href="https://sunshanlu.github.io/dso_ssl/Optimization-Model-DSO">DSO中的优化模型</a>中做了详细描述，这里只写出相关结论。</p>
+<div class="math">$$
+\begin{align*}
+    \frac{\partial{r_k}}{\partial{\xi_{ji}}}&amp;=
+    \frac{1}{P_Z'} 
+    \begin{bmatrix} d_x&amp;d_y \end{bmatrix} 
+    \begin{bmatrix} f_x &amp; 0 \\ 0 &amp; f_y \end{bmatrix}
+    \begin{bmatrix}
+        1 &amp; 0 &amp; -\frac{P_X'}{P_Z'} \\
+        0 &amp; 1 &amp; -\frac{P_Y'}{P_Z'} \\
+    \end{bmatrix}
+    \begin{bmatrix}
+        d_{pi}&amp;-P'^{\wedge}
+    \end{bmatrix}\\ &amp;=
+    \begin{bmatrix} d_xf_x&amp;d_yf_y\end{bmatrix}
+    \begin{bmatrix}
+        \frac{d_{pi}}{P_{Z}'} &amp; 0 &amp; -\frac{d_{pi}}{P_{Z}'}\frac{P_{X}'}{P_{Z}'} &amp; -\frac{P_{X}'P_{Y}'}{P_{Z}'^2} &amp; 1+\frac{P_{X}^{2}}{P_{Z}^{2}} &amp; -\frac{P_{Y}'}{P_{Z}'} 
+        \\
+        0 &amp; \frac{d_{pi}}{P_{Z}'} &amp; -\frac{d_{pi}}{P_{Z}'}\frac{P_{Y}'}{P_{Z}'} &amp; -1-\frac{P_{Y}^{2}}{P_{Z}^{2}} &amp; \frac{P_{X}'P_{Y}'}{P_{Z}^{2}} &amp; \frac{P_{X}'}{P_{Z}'}
+    \end{bmatrix}\\
+    \frac{\partial r_k}{\partial a_j}&amp;=\frac{t_j e^{a_i}}{t_i e^{a_j}}(b_i-I_i[p_i])\\
+    \frac{\partial r_k}{\partial b_j}&amp;=-1
+\end{align*}
+$$</div>
+<div class="admonition important">
+<p class="admonition-title">跟踪部分的细节性问题</p>
+<ol>
+<li>计算残差时，采用动态阈值调节的手段，即先确定一个相对可控的残差阈值，然后根据内点比例适当地调整倍率来确保有足够的内点进行优化。当这个可控阈值调整过后，说明某层优化的残差相对较大，为了保证收敛，会对这一层进行再次优化。（调整过阈值的层会优化两次，怀疑内点比例低）</li>
+<li>当某一层优化收敛后，会判断最终的优化RMSE和所有尝试的最小RMSE * 1.5做判断，如果大于1.5倍的最小值，则认定这次尝试直接失败，退出这次尝试，以节省时间，源码中维护这一行为的变量为<code>achieveRes</code>。</li>
+<li>如何判断某次尝试失败与否？<code>DSO</code>从光度仿射参数的相对量和绝对量上判断是否优化成功，<span class="math">\(a_j &gt; 1.2\)</span> 或者 <span class="math">\(b_j &gt; 200\)</span>则失败，<span class="math">\(a_{ji}&gt;1.5\)</span>或者<span class="math">\(b_{ji}&gt;200\)</span>则认为失败。</li>
+<li>如何提前退出尝试？从2.1节的介绍中可以发现，一共有<span class="math">\((3 * 3 * 3 - 1) * 3 + 4 = 82\)</span>次尝试，<code>DSO</code>为了避免多次尝试导致的时间浪费问题，会使用上一帧优化能量值 * 1.5 作为退出尝试的条件，当然这样就可能导致动态阈值一直增大的情况。<code>DSO</code>在<strong>关键帧判断</strong>中对这个问题做了约束，保证了动态阈值增长的上限（<strong>见本章第3节</strong>）。</li>
+</ol>
+</div>
+<h2 id="3">3. 关键帧判断（跟踪后处理）</h2>
+<p>在关键帧的判断中，除了通常考虑的<strong>时间间隔</strong>和<strong>空间间隔</strong>外，<code>DSO</code>还考虑了<strong>光度变化</strong>和用来提前退出尝试的跟踪<strong>能量阈值</strong>。</p>
+<ul>
+<li><code>DSO</code>中考虑的时间间隔相对普通，会人为限定一个创建关键帧的最大时间间隔，在<code>DSO</code>的源码中默认是<strong>不开启</strong>这个配置的。</li>
+<li><code>DSO</code>考虑的空间间隔相对新颖，不是所谓的真实距离，而是考虑了某些位姿间隔条件下的<strong>平均光流</strong>大小（金字塔第0层）。我们知道两张图像的平均光流大小可以近似的代表两张图像之间的视差，光流越大，视差越大，两张图片的重叠部分越少，反之亦然。<code>DSO</code>使用<span class="math">\(T_{cr}\)</span>中的<span class="math">\(t_{cr}\)</span>、<span class="math">\(-t_{cr}\)</span>、<span class="math">\(T_{cr}\)</span>和<span class="math">\([R_{cr},t_{cr}]\)</span>四种位姿导致的平均光流，配合自定义权重判断是否需要创建关键帧。使用四种位姿的平均光流而不是仅仅<span class="math">\(T_{cr}\)</span>造成的平均光流，我<strong>猜测</strong>可能是因为使用四种位姿可以在一定程度上模拟之后一段时间内的运动状态，从而做到提前判断。</li>
+<li><code>DSO</code>使用了基于光度仿射参数的直接法，因此当相对仿射参数<span class="math">\(a_{ji}\)</span>变化较大时，代表着当前帧和参考关键帧之间的<strong>光照条件</strong>发生了相对较大的变化，因此需要及时创建关键帧防止跟踪丢失情况的发生。</li>
+<li>在第2小节的末尾，做了一些跟踪细节方面的讨论，提到了提前退出尝试的动态阈值可能会<strong>持续增大</strong>，从而导致阈值限定意义失效，<code>DSO</code>为了防止这种情况的发生，会提前记录基于当前参考关键帧第一次跟踪成功的能量值，如果当前帧跟踪阈值超过了这个值的2倍，则认定需要创建关键帧了，这么做相当于对动态阈值的上限做了规定。</li>
+</ul>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: '#145402 ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+
+
+             
+ 
+                <p id="post-share-links">
+    喜欢这篇文章吗？喜欢就分享吧:
+      <a href="https://twitter.com/intent/tweet?text=DSO%E7%9A%84%E5%89%8D%E7%AB%AF%E8%B7%9F%E8%B8%AA&url=https%3A//sunshanlu.github.io/sunshanlu/Track-frame-in-DSO&hashtags=vslam,dso,robot" target="_blank" rel="nofollow noopener noreferrer" title="Share on Twitter">Twitter</a>
+ ❄       <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A//sunshanlu.github.io/sunshanlu/Track-frame-in-DSO" target="_blank" rel="nofollow noopener noreferrer" title="Share on Facebook">Facebook</a>
+ ❄       <a href="mailto:?subject=DSO%E7%9A%84%E5%89%8D%E7%AB%AF%E8%B7%9F%E8%B8%AA&amp;body=https%3A//sunshanlu.github.io/sunshanlu/Track-frame-in-DSO" target="_blank" rel="nofollow noopener noreferrer" title="Share via Email">Email</a>
+
+                <hr />
+    <div class="author-blurb">
+        <a href="https://github.com/sunshanlu" target="_blank" rel="nofollow noopener noreferrer">
+            <img src=https://avatars.githubusercontent.com/u/78467062 alt="孙善路-github Avatar" title="孙善路-github">
+            <span class="author-name">孙善路-github</span>
+        </a>
+        对SLAM和DL感兴趣的理工男
+    </div>
+    <div class="author-blurb">
+        <a href="https://space.bilibili.com/489032586" target="_blank" rel="nofollow noopener noreferrer">
+            <img src=https://sunshanlu.github.io/sunshanlu/images/avatars/sunshanlu.png alt="孙善路-bilibili Avatar" title="孙善路-bilibili">
+            <span class="author-name">孙善路-bilibili</span>
+        </a>
+        对SLAM和DL感兴趣的理工男
+    </div>
+
+            
+
+
+
+
+
+
+
+<section>
+    <h6 style="display:none;">Comments</h6>
+    <p id="comment-message">有什么问题吗，有任何问题欢迎你在下面评论留言或者邮件联系我！ </p>
+
+    <div class="accordion" id="accordion2">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle disqus-comment-count comment-count collapsed"
+                   data-toggle="collapse"
+                   data-parent="#accordion2"
+                   href="https://sunshanlu.github.io/sunshanlu/Track-frame-in-DSO#comment_thread"
+                   id="comment-accordion-toggle">
+                    Comments
+                </a>
+            </div>
+            <div id="comment_thread" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    <div class="comments">
+
+                        <script src="https://utteranc.es/client.js"
+        data-repo="sunshanlu/sunshanlu"
+        data-issue-term="https://sunshanlu.github.io/sunshanlu/Track-frame-in-DSO"
+        data-label="✨💬✨"
+        data-theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+            <hr/>
+<section>
+    <h2>Keep Reading</h2>
+<ul class="related-posts-list">
+<li><a href="https://sunshanlu.github.io/sunshanlu/De-distortion-in-DSO" title="DSO中的去畸变操作">DSO中的去畸变操作</a></li>
+<li><a href="https://sunshanlu.github.io/sunshanlu/Point-select-in-DSO" title="DSO中的点选策略">DSO中的点选策略</a></li>
+<li><a href="https://sunshanlu.github.io/sunshanlu/Optimization-Model-DSO" title="DSO中的优化模型">DSO中的优化模型</a></li>
+<li><a href="https://sunshanlu.github.io/sunshanlu/Initialization-of-DSO" title="DSO中的初始化">DSO中的初始化</a></li>
+<li><a href="https://sunshanlu.github.io/sunshanlu/SWF-in-DSO" title="DSO后端建图（滑窗优化）">DSO后端建图（滑窗优化）</a></li>
+</ul>
+<hr />
+</section>
+            <aside>
+            <nav>
+            <ul class="articles-timeline">
+                <li class="previous-article">« <a href="https://sunshanlu.github.io/sunshanlu/Initialization-of-DSO" title="Previous: DSO中的初始化">DSO中的初始化</a></li>
+                <li class="next-article"><a href="https://sunshanlu.github.io/sunshanlu/SWF-in-DSO" title="Next: DSO后端建图（滑窗优化）">DSO后端建图（滑窗优化）</a> »</li>
+            </ul>
+            </nav>
+            </aside>
+        </div>
+        <section id="article-sidebar" class="span2">
+            <h4>Published</h4>
+            <time itemprop="dateCreated" datetime="2025-02-18T00:00:00+08:00">2025-02-18</time>
+            <h4>Category</h4>
+            <a class="category-link" href="https://sunshanlu.github.io/sunshanlu/categories#dso-ref">DSO</a>
+            <h4>Tags</h4>
+            <ul class="list-of-tags tags-in-article">
+                <li><a href="https://sunshanlu.github.io/sunshanlu/tags#dso-ref">DSO
+                    <span class="superscript">7</span>
+</a></li>
+                <li><a href="https://sunshanlu.github.io/sunshanlu/tags#robot-ref">Robot
+                    <span class="superscript">7</span>
+</a></li>
+                <li><a href="https://sunshanlu.github.io/sunshanlu/tags#vslam-ref">vSLAM
+                    <span class="superscript">7</span>
+</a></li>
+            </ul>
+<h4>Contact Me</h4>
+<div id="sidebar-social-link">
+    <a href="https://github.com/sunshanlu" title="Github 页面" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="GitHub" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#1B1817"/><path fill="#fff" d="M335 499c14 0 12 17 12 17H165s-2-17 12-17c13 0 16-6 16-12l-1-50c-71 16-86-28-86-28-12-30-28-37-28-37-24-16 1-16 1-16 26 2 40 26 40 26 22 39 59 28 74 22 2-17 9-28 16-35-57-6-116-28-116-126 0-28 10-51 26-69-3-6-11-32 3-67 0 0 21-7 70 26 42-12 86-12 128 0 49-33 70-26 70-26 14 35 6 61 3 67 16 18 26 41 26 69 0 98-60 120-117 126 10 8 18 24 18 48l-1 70c0 6 3 12 16 12z"/></svg>
+    </a>
+    <a href="mailto:ssl2001@126.com" title="Email Me" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="Mail" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#328cff"/><path d="m250 186c-46 0-69 35-69 74 0 44 29 72 68 72 43 0 73-32 73-75 0-44-34-71-72-71zm-1-37c30 0 57 13 77 33 0-22 35-22 35 1v150c-1 10 10 16 16 9 25-25 54-128-14-187-64-56-149-47-195-15-48 33-79 107-49 175 33 76 126 99 182 76 28-12 41 26 12 39-45 19-168 17-225-82-38-68-36-185 67-248 78-46 182-33 244 32 66 69 62 197-2 246-28 23-71 1-71-32v-11c-20 20-47 32-77 32-57 0-108-51-108-108 0-58 51-110 108-110" fill="#fff"/></svg>
+    </a>
+    <a href="/feeds/all.atom.xml" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="RSS" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#f80"/><circle cx="145" cy="367" r="35" fill="#fff"/><path fill="none" stroke="#fff" stroke-width="60" d="M109 241c89 0 162 73 162 162M109 127c152 0 276 124 276 276"/></svg>
+    </a>
+</div>
+            
+
+
+
+
+
+            
+
+
+
+
+
+        </section>
+</div>
+</article>
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe.
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides.
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo https://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>                    </div>
+                    <div class="span1"></div>
+                </div>
+            </div>
+        </div>
+<footer>
+    <div>
+        Content licensed under <a rel="license nofollow noopener noreferrer"
+    href="http://creativecommons.org/licenses/by/4.0/" target="_blank">
+    Creative Commons Attribution 4.0 International License</a>.
+    </div>
+
+    <div>
+        <span class="site-name">SSL的个人Blog</span> - 记录开发随笔
+    </div>
+
+
+
+    <div id="fpowered">
+        Powered by: <a href="http://getpelican.com/" title="Pelican Home Page" target="_blank" rel="nofollow noopener noreferrer">Pelican</a>
+        Theme: <a href="https://elegant.oncrashreboot.com/" title="Theme Elegant Home Page" target="_blank" rel="nofollow noopener noreferrer">Elegant</a>
+        Hosted on:
+        <a href=https://www.github.com/ target="_blank" rel="nofollow noopener noreferrer">
+            Github
+        </a>
+    </div>
+</footer>            <script src="//code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script src="https://sunshanlu.github.io/sunshanlu/theme/js/elegant.prod.9e9d5ce754.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    <script>
+    (function () {
+        if (window.location.hash.match(/^#comment-\d+$/)) {
+            $('#comment_thread').collapse('show');
+        }
+    })();
+    window.onhashchange=function(){
+        if (window.location.hash.match(/^#comment-\d+$/))
+            window.location.reload(true);
+    }
+    $('#comment_thread').on('shown', function () {
+        var link = document.getElementById('comment-accordion-toggle');
+        var old_innerHTML = link.innerHTML;
+        $(link).fadeOut(200, function() {
+            $(this).text('Click here to hide comments').fadeIn(200);
+        });
+        $('#comment_thread').on('hidden', function () {
+            $(link).fadeOut(200, function() {
+                $(this).text(old_innerHTML).fadeIn(200);
+            });
+        })
+    })
+</script>
+
+    </body>
+    <!-- Theme: Elegant built for Pelican
+        License : MIT -->
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="https://sunshanlu.github.io/sunshanlu/theme/css/elegant.prod.9e9d5ce754.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="https://sunshanlu.github.io/sunshanlu/theme/css/custom.css" media="screen">
+
+        <link rel="dns-prefetch" href="//fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+
+        <meta name="google-site-verification" content="UpDPegqFb_TnOIJbDp5ud8wVncaUoUB-fJoQyiiAdmg" />        <meta name="msvalidate.01" content="A86784EE624E2187E0AC969B764CE1E1" />        <meta name="author" content="孙善路-github" />
+
+        <meta name="description" content="1. git仓库创建 1.1 本地创建并推送 git init git remote add origin &lt;your-ssh-or-https-url&gt; git branch -M &lt;branch-name&gt; # 推荐将分支名称设置为与origin一致 echo &#34;hello world&#34; &gt; README.md # 替换成你实际对工作区的 …
+" />
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content="git, 随笔, " />
+
+<meta property="og:title" content="git工具使用总结 "/>
+<meta property="og:url" content="https://sunshanlu.github.io/sunshanlu/git-learn" />
+<meta property="og:description" content="1. git仓库创建 1.1 本地创建并推送 git init git remote add origin &lt;your-ssh-or-https-url&gt; git branch -M &lt;branch-name&gt; # 推荐将分支名称设置为与origin一致 echo &#34;hello world&#34; &gt; README.md # 替换成你实际对工作区的 …" />
+<meta property="og:site_name" content="SSL的个人Blog" />
+<meta property="og:article:author" content="孙善路-github" />
+<meta property="og:article:published_time" content="2025-06-30T00:00:00+08:00" />
+<meta name="twitter:title" content="git工具使用总结 ">
+<meta name="twitter:description" content="1. git仓库创建 1.1 本地创建并推送 git init git remote add origin &lt;your-ssh-or-https-url&gt; git branch -M &lt;branch-name&gt; # 推荐将分支名称设置为与origin一致 echo &#34;hello world&#34; &gt; README.md # 替换成你实际对工作区的 …">
+
+        <title>git工具使用总结  · SSL的个人Blog
+</title>
+        <link rel="shortcut icon" href="https://sunshanlu.github.io/sunshanlu/theme/images/favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-152x152.png" type="image/png" />
+        <link rel="apple-touch-icon" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon.png"  type="image/png" />
+        <link rel="apple-touch-icon" sizes="57x57" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-57x57.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-72x72.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="76x76" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-76x76.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-114x114.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-120x120.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-144x144.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-152x152.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="https://sunshanlu.github.io/sunshanlu/theme/images/apple-touch-icon-180x180.png" type="image/png" />
+        <link href="https://sunshanlu.github.io/sunshanlu/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="SSL的个人Blog - Full Atom Feed" />
+
+
+
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    </head>
+    <body>
+        <div id="content">
+            <div class="navbar navbar-static-top">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="brand" href="https://sunshanlu.github.io/sunshanlu/"><span class=site-name>SSL的个人Blog</span></a>
+                        <div class="nav-collapse collapse">
+                            <ul class="nav pull-right top-menu">
+                                <li >
+                                    <a href=
+                                       https://sunshanlu.github.io/sunshanlu
+                                    >Home</a>
+                                </li>
+                                <li ><a href="https://sunshanlu.github.io/sunshanlu/categories">Categories</a></li>
+                                <li ><a href="https://sunshanlu.github.io/sunshanlu/tags">Tags</a></li>
+                                <li ><a href="https://sunshanlu.github.io/sunshanlu/archives">Archives</a></li>
+                                <li><form class="navbar-search" action="https://sunshanlu.github.io/sunshanlu/search" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span1"></div>
+                    <div class="span10">
+<article itemscope>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+        <h1>
+            <a href="https://sunshanlu.github.io/sunshanlu/git-learn">
+                git工具使用总结
+            </a>
+        </h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+        <div class="span8 offset2 article-content">
+            
+            <h2 id="1-git">1.&nbsp;git仓库创建</h2>
+<h3 id="11">1.1&nbsp;本地创建并推送</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>init
+git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>origin<span class="w"> </span>&lt;your-ssh-or-https-url&gt;
+
+git<span class="w"> </span>branch<span class="w"> </span>-M<span class="w"> </span>&lt;branch-name&gt;<span class="w">         </span><span class="c1"># 推荐将分支名称设置为与origin一致</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;hello world&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>README.md<span class="w">      </span><span class="c1"># 替换成你实际对工作区的操作</span>
+git<span class="w"> </span>add<span class="w"> </span>.<span class="w">                           </span><span class="c1"># 添加到暂存区</span>
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;your commit message&quot;</span><span class="w"> </span><span class="c1"># 将展存区的内容添加到本地存储库 </span>
+git<span class="w"> </span>push<span class="w"> </span>-u<span class="w"> </span>origin<span class="w"> </span>&lt;branch-name&gt;<span class="w">    </span><span class="c1"># 将当前分支推送到远程仓库，推荐本地和远程之间的分支名称一致</span>
+</code></pre></div>
+
+<p>注意：</p>
+<ul>
+<li>本地创建仓库的<strong>默认名称</strong>为<code>master</code>，<code>git branch -M</code>操作是强制对一个分支进行重命名，等同于<code>git branch --move --force</code>操作。</li>
+<li>在执行<code>git remote</code> 和<code>git push</code>操作之前，需要保证远程仓库已经建立完成。</li>
+</ul>
+<h3 id="12-clone">1.2&nbsp;远程创建并<code>clone</code></h3>
+<p>更加推荐的一种方法，可以直接在<code>github</code>或者<code>gitee</code>等平台上创建仓库，然后通过<code>git clone</code>命令完成<code>clone</code>操作。</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>&lt;your-ssh-or-https-url&gt;
+</code></pre></div>
+
+<p>使用这种方式，可以保证你仓库的<strong>分支名称</strong>、和<strong>远程仓库的关联关系</strong>等保持一致。</p>
+<h2 id="2">2.&nbsp;本地代码存储逻辑</h2>
+<h3 id="21">2.1&nbsp;工作区遇到的问题</h3>
+<p>试想一下，你对<strong>工作区</strong>中的内容作了某些修改，但是你发现修改的内容并不能修复你目前存在的问题，你想将修改的部分删除掉，应该怎么做呢？</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>restore<span class="w"> </span>&lt;file&gt;<span class="w">  </span><span class="c1"># 对单独的某个文件做修改后的恢复操作</span>
+git<span class="w"> </span>restore<span class="w"> </span>.<span class="w">       </span><span class="c1"># 对整个工作区中产生修改的所有文件进行恢复操作</span>
+</code></pre></div>
+
+<p>假设在工作区中，你新建了某个文件，但是发现这个文件貌似没有起到什么作用，但恰好你不知道如何那个文件需要被删除，这里提供两种解决方案：</p>
+<ol>
+<li>使用<code>git status</code>查看当前工作区状态，在<strong>未跟踪</strong>部分找到新建的文件，然后使用系统文件管理功能针对性的删除文件。</li>
+<li>使用命令行的方式实现删除操作，当然是在清除需要删除的文件之后执行。</li>
+</ol>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clean<span class="w"> </span>-f<span class="w"> </span>&lt;file&gt;<span class="w"> </span><span class="c1"># 删除某个文件</span>
+git<span class="w"> </span>clean<span class="w"> </span>-df<span class="w"> </span>&lt;dir&gt;<span class="w"> </span><span class="c1"># 删除某个目录，递归删除</span>
+</code></pre></div>
+
+<p>下面是<code>git clean</code>命令常见的参数：</p>
+<ul>
+<li><code>-f</code>：强制删除</li>
+<li><code>-i</code>：在可交互模式下删除</li>
+<li><code>-d</code>：对于某个文件夹，递归的删除</li>
+</ul>
+<h3 id="22">2.2&nbsp;暂存区存储问题</h3>
+<p>我认为对于暂存区出现的任何问题都可以通过直接修改当前工作区，然后通过<code>git add</code>命令添加到暂存区解决。不过这里我还是贴出某些问题的<strong>命令行</strong>解决方法：</p>
+<ul>
+<li>工作区添加到暂存区的方法</li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>&lt;file&gt;<span class="w">  </span><span class="c1"># 添加新文件或文件修改到暂存区</span>
+git<span class="w"> </span>add<span class="w"> </span>.<span class="w">       </span><span class="c1"># 添加所有更改和新创建文件到暂存区</span>
+</code></pre></div>
+
+<ul>
+<li>添加到暂存区后,出现问题,如何修改?</li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>reset<span class="w"> </span>&lt;file&gt;<span class="w">    </span><span class="c1"># 撤销某个指定文件的暂存区的更改</span>
+git<span class="w"> </span>reset<span class="w"> </span>.<span class="w">         </span><span class="c1"># 撤销暂存区的所有更改</span>
+</code></pre></div>
+
+<h3 id="23">2.3&nbsp;本地版本库存储问题</h3>
+<p>当团队组合开发某个应用功能时，需要<strong>创建</strong>新分支，然后当某个分支合并完成后，需要将一个分支进行<strong>删除</strong>时应该如何操作呢？</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>&lt;new-branch-name&gt;<span class="w">           </span><span class="c1"># 以当前HEAD指向的commit为起始点，创建并切换到分支下</span>
+git<span class="w"> </span>branch<span class="w"> </span>&lt;new-branch-name&gt;<span class="w"> </span>&lt;commit&gt;<span class="w">       </span><span class="c1"># 以某次提交为起始点，创建分支，不切换</span>
+git<span class="w"> </span>branch<span class="w"> </span>&lt;new-branch-name&gt;<span class="w"> </span>&lt;branch-name&gt;<span class="w">  </span><span class="c1"># 以branch指向的commit为起始点，创建分支，不切换</span>
+git<span class="w"> </span>branch<span class="w"> </span>&lt;new-branch-name&gt;<span class="w"> </span>&lt;tag-name&gt;<span class="w">     </span><span class="c1"># 以某个tag指向的commit为起始点，创建分支，不切换</span>
+git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>&lt;branch-name&gt;<span class="w">                 </span><span class="c1"># 删除某个分支</span>
+</code></pre></div>
+
+<p>有一种比较清晰的<code>branch</code>管理方法，即使用<code>name/task</code>的命令方式，<code>name</code>对应实际的人名，而<code>task</code>代表这个人在这个分支下需要完成的人物，这样比较清晰明了，并且当其完成某个任务后，可以为这个分支打上一个<code>name/task</code>的<code>tag</code>标签这么作有以下两个好处：</p>
+<ul>
+<li>当<code>task</code>没有完成时，分支跟着<code>commit</code>向前滚动，可以明确当前时间下，哪个人员在作哪些事情。</li>
+<li>当<code>task</code>完成后，可以将最终的<code>commit</code>标记为一个<code>tag</code>，做到工作留痕，并可以在未完成时（经过市场验证，发现解决的不是特别好），可以根据这个<code>tag</code>回滚，继续完善这个任务。</li>
+</ul>
+<p>当团队协作过程中，某个人在<code>name/task</code>分支下，完成了功能开发以后，经测试没问题，进行向主分支合并时，或许会遇到一些问题：</p>
+<ul>
+<li>当<code>main</code>分支指向的提交为<code>name/task</code>指向提交的直接祖先时，<code>git</code>默认会采用<code>fast forward</code>策略，不创建提交，而是直接将<code>main</code>指向<code>name/task</code>指向的提交。</li>
+<li>当<code>name/task</code>分支在解决问题，不断的创建提交的过程中，<code>main</code>分支也在不断的被更新创建提交时，会出现以下两种情况：</li>
+<li>当分支<code>name/task</code>和<code>main</code>同时拥有的文件<strong>没有发生改变时</strong>，将无冲突发生，<code>git merge</code>会默认合并到<code>main</code>分支中去，中间会创建新的commit。</li>
+<li>当分支<code>name/task</code>和<code>main</code>同时拥有的文件同时发生了修改时，将有冲突发生，<code>git merge</code>会将冲突产生的文件里面的内容进行标记，并放在暂存区，等待用户解决。</li>
+<li>当<code>git merge</code>命令可以自己合并分支时，如果产生了提交，<code>git merge</code>会自动生成提交语句，如果用户想自定义这个提交应该怎么解决？使用下面的命令即可解决这个问题。</li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>merge<span class="w"> </span>--no-commit<span class="w"> </span>&lt;name/task&gt;<span class="w"> </span><span class="c1"># 前提保证目前HEAD指向的是main分支</span>
+</code></pre></div>
+
+<ul>
+<li>代码里面，<code>--no-commit</code>参数代表的意思是不需要默认提交，而是将修改放到暂存区，等到用户边界提交内容后，再统一提交。</li>
+<li>当存在冲突时，<code>--no-commit</code>没有任何作用，因为冲突需要用户手动处理，不会默认提交。</li>
+</ul>
+<p>当你刚提交完某个<code>commit</code>到本地后，发现<code>comment content</code>并不满意，无法体现你所做工作的内容，因此你想修改这个提交内容，应该怎么做呢？下面是解决思路：</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>reset<span class="w"> </span>--soft<span class="w"> </span>HEAD^<span class="w"> </span><span class="c1"># 将当前分支回退到commit之前</span>
+git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;&lt;your-new-commit-conten&gt;&quot;</span>
+</code></pre></div>
+
+<p>注意：</p>
+<ul>
+<li><code>--soft</code>表示不删除工作区文件，退回到指定commit之后，工作区的内容并没有发生修改</li>
+<li>保证最近提交没有同步到远程仓库，否则reset后，提交到远程仓库会失败</li>
+</ul>
+<h3 id="24-committag">2.4&nbsp;提交<code>commit</code>的别名<code>tag</code></h3>
+<p>经常逛<code>github</code>的你，肯定会发现，某个存储库，除了使用<code>branch</code>以外，还会有一个名为<code>tag</code>的东西，这是什么？</p>
+<ul>
+<li><code>tag</code>是一个<code>commit</code>的类型别名，当使用某个<code>commit</code>创建了<code>tag</code>后，这个<code>tag</code>就不会随着<code>commit</code>的增加而更新指向了</li>
+<li><code>branch</code>会随着<code>commit</code>的不断更新维护所有的提交，并维护的最后一个<code>commit</code>，这是<code>branch</code>与<code>tag</code>之间最大的区别</li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>tag<span class="w"> </span>&lt;your-tag-name&gt;<span class="w"> </span>&lt;commit-hash&gt;<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;&lt;your-tag-desc-message&gt;&quot;</span><span class="w">  </span><span class="c1"># 以某个commit添加tag</span>
+git<span class="w"> </span>tag<span class="w"> </span>-d<span class="w"> </span>&lt;your-tag-name&gt;<span class="w">                                          </span><span class="c1"># 删除tag</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>&lt;your-tag-name&gt;<span class="w">                                     </span><span class="c1"># 推送tag到远程仓库</span>
+</code></pre></div>
+
+<h2 id="3">3.&nbsp;远程仓库存储逻辑</h2>
+<h3 id="31">3.1&nbsp;本地与远程的同步操作</h3>
+<p>远程到本地的同步操作：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 存储库同步操作</span>
+git<span class="w"> </span>clone<span class="w"> </span>&lt;your-remote-repo-url&gt;<span class="w">    </span><span class="c1"># 本地向远程同步所有存储库内容</span>
+
+<span class="c1"># 分支同步操作</span>
+git<span class="w"> </span>pull<span class="w">                            </span><span class="c1"># 从远程仓库中拉取merge所有更新(tag、branch、commit)</span>
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>&lt;your-branch-name&gt;<span class="w">  </span><span class="c1"># 同步指定分支，拉取并merge，同名分支</span>
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>&lt;remote-branch&gt;:&lt;local-branch&gt;<span class="w"> </span><span class="c1"># 拉取并merge指定分支，不同名分支(不推荐)</span>
+
+git<span class="w"> </span>fetch<span class="w">                           </span><span class="c1"># 从远程仓库中拉取所有更新，但不merge</span>
+git<span class="w"> </span>fetch<span class="w"> </span>origin<span class="w"> </span>&lt;your-branch-name&gt;<span class="w"> </span><span class="c1"># 拉取指定分支，不merge，同名分支</span>
+git<span class="w"> </span>fetch<span class="w"> </span>origin<span class="w"> </span>&lt;remote-branch&gt;:&lt;local-branch&gt;<span class="w"> </span><span class="c1"># 拉取指定分支，不merge，不同名分支(不推荐)</span>
+
+<span class="c1"># tag同步操作</span>
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>--tags<span class="w">                              </span><span class="c1"># 同步指定分支</span>
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>&lt;tag-name&gt;<span class="w">                          </span><span class="c1"># 同步指定tag，并且tag重名</span>
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>&lt;remote-tag-name&gt;:&lt;local-tag-name&gt;<span class="w">  </span><span class="c1"># 同步指定tag，并且tag不同名</span>
+</code></pre></div>
+
+<p>本地到远程的同步操作：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 分支同步操作</span>
+git<span class="w"> </span>push<span class="w">                        </span><span class="c1"># 当前HEAD指向的分支</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>&lt;brach-name&gt;<span class="w">    </span><span class="c1"># 推送指定分支到origin，同名</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>&lt;local-branch-name&gt;:&lt;remote-branch-name&gt;<span class="w"> </span><span class="c1"># 推送local-branch，不同名</span>
+
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>&lt;tag-name&gt;<span class="w">      </span><span class="c1"># 推送指定tag，同名</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>&lt;local-tag-name&gt;:&lt;remote-tag-name&gt;<span class="w"> </span><span class="c1"># 推送local-tag，不同名</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>--tags<span class="w">          </span><span class="c1"># 推送所有tag</span>
+
+git<span class="w"> </span>push<span class="w"> </span>--delete<span class="w"> </span>origin<span class="w"> </span>&lt;branch-name&gt;<span class="w">  </span><span class="c1"># 删除远程分支操作</span>
+git<span class="w"> </span>push<span class="w"> </span>--delete<span class="w"> </span>origin<span class="w"> </span>&lt;tag-name&gt;<span class="w">     </span><span class="c1"># 删除远程tag</span>
+</code></pre></div>
+
+<h3 id="32">3.2&nbsp;远程冲突的解决</h3>
+<p>远程冲突的发生，往往是因为直接使用<code>git pull</code>或者<code>git merge</code>操作时，导致的冲突，原因都可以归结为<code>git merge</code>操作，解决远程冲突与本地冲突一样，详情间<strong>2.3</strong>本地合并的冲突问题。</p>
+<h2 id="4">4.&nbsp;其他内容</h2>
+<h3 id="41-gitignoregitattributesgitsubmodule">4.1&nbsp;gitignore和gitattributes和gitsubmodule</h3>
+<p><code>.gitignore</code>文件定义了工作区间内，什么的文件或者文件夹不因该被<code>git</code>所管理。对于<code>C++</code>的项目来讲，<code>build</code>文件夹下的编译内容不应该被管理，<code>.idea</code>下的<code>IDE</code>配置不应该被管理等等。此外，<code>.gitignore</code>文件还支持正则表达式匹配。下面就是一个<code>C++</code>项目的<code>.gitignore</code>文件。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 不同平台下，源文件编译生成的二进制文件</span>
+*.slo
+*.lo
+*.o
+*.obj
+
+<span class="c1"># 预编译的头文件</span>
+*.gch
+*.pch
+
+<span class="c1"># 编译的动态库文件</span>
+*.so
+*.dylib
+*.dll
+
+<span class="c1"># 编译的静态库文件</span>
+*.lai
+*.la
+*.a
+*.lib
+
+<span class="c1"># 编译的可执行文件</span>
+*.exe
+*.out
+*.app
+
+<span class="c1"># 编译中间文件的文件夹</span>
+build/
+
+<span class="c1"># IDE生成的文件</span>
+.vscode/
+
+<span class="c1"># 可自行文件的文件夹</span>
+bin/
+
+<span class="c1"># 库文件文件夹</span>
+lib/
+</code></pre></div>
+
+<p>注意，对于不同分支下，可能会存在不同的<code>ignore</code>操作，比如分支<code>a</code>里面使用了<code>ros2</code>完成了某项功能，而分支<code>b</code>使用<code>ros</code>完成了某项功能，两个分支<code>.gitignore</code>应该都需要忽略<code>ros</code>项目的<code>build devel log</code>编译文件夹和<code>ros2</code>项目的<code>build install logs</code>文件夹，这种情况下，两分支下的<code>.gitignore</code>应该保持一致，避免在切换分支时的<strong>误添加</strong>操作。</p>
+<p><code>.gitattributes</code>文件主要有以下说明：</p>
+<ul>
+<li><strong>行尾符处理</strong>，不同的操作系统，对换行符的理解存在差异，可以指定某些系统强相关的文件指定换行符为特定符号，例如指定<code>*.bat</code>和<code>*.cmd</code>结尾的windows脚本文件以<code>crlf</code>结尾，而其余文件指定<code>lf</code>为结尾，而对于可跨平台的文本文件，则在<code>IDE</code>指定换行符即可。</li>
+<li><strong><code>merge</code>规则指定</strong>，对于不同的文件，需要指定不同的合并规则，例如<code>*.md</code>，<code>*.cpp</code>等文本文件，应该使用<code>merge=text</code>策略，将内容差异拼接到工作空间的对应文件夹中，进行人为的修改合并即可。而对于<code>binary</code>文件，其并不会像<code>text</code>文本文件那些将内容拼接，而是等待用户自行修改，可以选择传入新的文件，也可以使用<code>git checkout --ours</code>或者<code>git checkout --theirs</code>来选择当前<code>HEAD</code>或者其他<code>commit</code>中的文件。</li>
+<li><strong>文件归档控制</strong>，<code>git archive</code>命令可以输出归档后的源文件信息，而某些文件不需要出现在源文件中，例如<code>.gitattributes</code>文件，<code>.gitignore</code>文件，文档文件夹，测试文件夹等都不需要归档打包，因此在<code>.gitattributes</code>文件中，可以使用<code>export-ignore</code>关键字进行声明；</li>
+</ul>
+<p>一个比较成熟的项目<code>.gitattributes</code>文件如下：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 行尾符处理</span>
+*<span class="w"> </span><span class="nv">text</span><span class="o">=</span>auto
+*.txt<span class="w"> </span>text
+*.md<span class="w"> </span>text
+*.cpp<span class="w"> </span>text
+*.h<span class="w"> </span>text
+*.py<span class="w"> </span>text<span class="w"> </span><span class="nv">eol</span><span class="o">=</span>lf
+*.sh<span class="w"> </span>text<span class="w"> </span><span class="nv">eol</span><span class="o">=</span>lf
+
+<span class="c1"># windows脚本文件行尾说明</span>
+*.bat<span class="w"> </span>text<span class="w"> </span><span class="nv">eol</span><span class="o">=</span>crlf
+*.cmd<span class="w"> </span>text<span class="w"> </span><span class="nv">eol</span><span class="o">=</span>crlf
+
+<span class="c1"># 二进制文件，即当merge时，采用binary合并策略</span>
+*.png<span class="w"> </span>binary
+*.jpg<span class="w"> </span>binary
+*.pdf<span class="w"> </span>binary
+*.exe<span class="w"> </span>binary
+
+<span class="c1"># 合并策略声明</span>
+*.conf<span class="w"> </span><span class="nv">merge</span><span class="o">=</span>union
+
+<span class="c1"># 归档控制 - 排除开发相关文件</span>
+.gitignore<span class="w"> </span>export-ignore
+.gitattributes<span class="w"> </span>export-ignore
+
+<span class="c1"># 归档控制 - 排除测试和文档目录</span>
+tests/<span class="w"> </span>export-ignore
+docs/<span class="w"> </span>export-ignore
+examples/<span class="w"> </span>export-ignore
+
+<span class="c1"># 归档控制 - 排除构建相关目录</span>
+*.log<span class="w"> </span>export-ignore
+</code></pre></div>
+
+<ul>
+<li><code>export-ignore</code>在归档时，控制着<code>commit</code>中忽视的内容</li>
+<li><code>git archive -o xxx/xxx.tar.gz [commit]</code>，会查看<code>.gitattributes</code>文家里面有关的归档操作。</li>
+<li><code>.gitattributes</code>文件里面的等号相连之间<strong>不能存在空格</strong>，否则为非法，就像<code>json</code>文件里面不能使用单引号表示字符串一样。</li>
+</ul>
+<p><code>.gitsubmodules</code>文件用于管理项目下的子模块,其主要在以下几种情况下比较有用:</p>
+<ul>
+<li>当子模块和当前项目都是你们自己团队的任务时,你们可以同时对子模块和当前项目进行开发;</li>
+<li>当子模块为项目依赖的某个开源三方库时,使用子模块操作,可以减少当前项目占用的仓库空间;</li>
+</ul>
+<p>为项目添加一个现有的子模块,可以使用下面的命令实现:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>submodule<span class="w"> </span>add<span class="w"> </span>-b<span class="w"> </span>&lt;branch-name&gt;<span class="w"> </span>--<span class="w"> </span>&lt;url&gt;<span class="w"> </span>&lt;path&gt;
+</code></pre></div>
+
+<ul>
+<li><code>branch-name</code>为模块依赖的分支名称</li>
+<li><code>url</code>为模块对应的远程仓库地址</li>
+<li><code>path</code>为模块在项目工作空间存放的路径位置</li>
+</ul>
+<p>当添加了某个子模块后,应该如何删除呢?</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>submodule<span class="w"> </span>deinit<span class="w"> </span>--<span class="w"> </span>&lt;path&gt;<span class="w"> </span><span class="c1"># 取消子模块与当前工作区间的关联</span>
+rm<span class="w"> </span>-rf<span class="w"> </span>.git/modules/&lt;path&gt;<span class="w">     </span><span class="c1"># 删除.git下对于子模块的存储逻辑</span>
+nano<span class="w"> </span>.gitmodules<span class="w">               </span><span class="c1"># 针对性的处理.gitmodules文件,对相关模型进行删除</span>
+</code></pre></div>
+
+<p>当模块中的内容发生改变时,项目和子模块如何使用<code>git</code>进行管理呢?</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>&lt;submodule-path&gt;
+git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span><span class="nv">commit</span><span class="w"> </span><span class="o">=</span>m<span class="w"> </span><span class="s2">&quot;&lt;module-commit-message&gt;&quot;</span>
+<span class="nb">cd</span><span class="w"> </span>&lt;project-path&gt;
+git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;&lt;project-sync-module-message&gt;&quot;</span>
+git<span class="w"> </span>push<span class="w">   </span><span class="c1"># 同步更新子模块远程仓库和项目远程仓库</span>
+</code></pre></div>
+
+<p>当<code>clone</code>某个带有子模块的项目时,应该同步<code>clone</code>它的子模块呢?</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>&lt;project-with-submodule&gt;
+git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w"> </span>--init<span class="w"> </span>--recursive
+</code></pre></div>
+
+<ul>
+<li><code>--init</code> 初始化子模块和项目关联</li>
+<li><code>--recursive</code> 递归的处理所有子模块下的子模块</li>
+</ul>
+<h3 id="42-diff">4.2&nbsp;diff操作查看文件差异</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>diff<span class="w"> </span>&lt;commit&gt;<span class="w">          </span><span class="c1"># 查看工作区和某次commit之间的差异</span>
+git<span class="w"> </span>diff<span class="w"> </span>--staged<span class="w"> </span>&lt;commit&gt;<span class="w"> </span><span class="c1"># 查看暂存区和某次commit之间的差异，默认为HEAD</span>
+git<span class="w"> </span>diff<span class="w"> </span>&lt;commit-a&gt;<span class="w"> </span>&lt;commit-b&gt;<span class="w"> </span>--<span class="w"> </span>file<span class="w"> </span><span class="c1"># 查看两个commit之间的file差异</span>
+git<span class="w"> </span>diff<span class="w"> </span>&lt;commit-a&gt;<span class="w"> </span>&lt;commit-b&gt;<span class="w">         </span><span class="c1"># 查看两个commot之间所有文件差异</span>
+</code></pre></div>
+
+<ul>
+<li>针对两个<code>commit</code>之间的差异，<code>&lt;commit-a&gt;</code>为原始<code>commit</code>而<code>&lt;commit-b&gt;</code>为修改<code>commit</code>，相当于查看<code>&lt;commit-b&gt;</code>相比与<code>&lt;commit-a&gt;</code>之间修改了什么内容。</li>
+<li><code>--stat</code>可选参数可以输出统计信息，即显示某个文件修改的行数，可以快速查看那些文件作了多少的修改，比较直观。</li>
+</ul>
+<h3 id="43-log">4.3&nbsp;log操作查看某次提交的提交记录</h3>
+<ul>
+<li>当直接使用<code>git log</code>时，会将<code>HEAD</code>指向的<code>commit</code>对应的所有父级（包含其本身）对应的<code>commit</code>对应的<code>hash</code>值和<code>commit content</code>内容打印出来（包括时间、作者和邮箱信息）。</li>
+<li>注意，这里的父级不仅包含同一<code>branch</code>下的<code>commit</code>关系，还包含了<code>merge</code>后，<code>merge</code>节点对应的<code>commit</code>的父子关系。</li>
+<li>当<code>git log &lt;commit/branch/tag&gt;</code>时，对应的都是其指向的<code>commit</code>对应的所有父级（包含其本身）的<code>commit</code>节点信息。</li>
+</ul>
+
+
+             
+ 
+                <p id="post-share-links">
+    喜欢这篇文章吗？喜欢就分享吧:
+      <a href="https://twitter.com/intent/tweet?text=git%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93&url=https%3A//sunshanlu.github.io/sunshanlu/git-learn&hashtags=git" target="_blank" rel="nofollow noopener noreferrer" title="Share on Twitter">Twitter</a>
+ ❄       <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A//sunshanlu.github.io/sunshanlu/git-learn" target="_blank" rel="nofollow noopener noreferrer" title="Share on Facebook">Facebook</a>
+ ❄       <a href="mailto:?subject=git%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93&amp;body=https%3A//sunshanlu.github.io/sunshanlu/git-learn" target="_blank" rel="nofollow noopener noreferrer" title="Share via Email">Email</a>
+
+                <hr />
+    <div class="author-blurb">
+        <a href="https://github.com/sunshanlu" target="_blank" rel="nofollow noopener noreferrer">
+            <img src=https://avatars.githubusercontent.com/u/78467062 alt="孙善路-github Avatar" title="孙善路-github">
+            <span class="author-name">孙善路-github</span>
+        </a>
+        对SLAM和DL感兴趣的理工男
+    </div>
+    <div class="author-blurb">
+        <a href="https://space.bilibili.com/489032586" target="_blank" rel="nofollow noopener noreferrer">
+            <img src=https://sunshanlu.github.io/sunshanlu/images/avatars/sunshanlu.png alt="孙善路-bilibili Avatar" title="孙善路-bilibili">
+            <span class="author-name">孙善路-bilibili</span>
+        </a>
+        对SLAM和DL感兴趣的理工男
+    </div>
+
+            
+
+
+
+
+
+
+
+<section>
+    <h6 style="display:none;">Comments</h6>
+    <p id="comment-message">有什么问题吗，有任何问题欢迎你在下面评论留言或者邮件联系我！ </p>
+
+    <div class="accordion" id="accordion2">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle disqus-comment-count comment-count collapsed"
+                   data-toggle="collapse"
+                   data-parent="#accordion2"
+                   href="https://sunshanlu.github.io/sunshanlu/git-learn#comment_thread"
+                   id="comment-accordion-toggle">
+                    Comments
+                </a>
+            </div>
+            <div id="comment_thread" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    <div class="comments">
+
+                        <script src="https://utteranc.es/client.js"
+        data-repo="sunshanlu/sunshanlu"
+        data-issue-term="https://sunshanlu.github.io/sunshanlu/git-learn"
+        data-label="✨💬✨"
+        data-theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+            <hr/>
+            <aside>
+            <nav>
+            <ul class="articles-timeline">
+                <li class="previous-article">« <a href="https://sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO" title="Previous: IA-YOLO原理">IA-YOLO原理</a></li>
+            </ul>
+            </nav>
+            </aside>
+        </div>
+        <section id="article-sidebar" class="span2">
+            <h4>Published</h4>
+            <time itemprop="dateCreated" datetime="2025-06-30T00:00:00+08:00">2025-06-30</time>
+            <h4>Category</h4>
+            <a class="category-link" href="https://sunshanlu.github.io/sunshanlu/categories#sui-bi-ref">随笔</a>
+            <h4>Tags</h4>
+            <ul class="list-of-tags tags-in-article">
+                <li><a href="https://sunshanlu.github.io/sunshanlu/tags#git-ref">git
+                    <span class="superscript">1</span>
+</a></li>
+            </ul>
+<h4>Contact Me</h4>
+<div id="sidebar-social-link">
+    <a href="https://github.com/sunshanlu" title="Github 页面" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="GitHub" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#1B1817"/><path fill="#fff" d="M335 499c14 0 12 17 12 17H165s-2-17 12-17c13 0 16-6 16-12l-1-50c-71 16-86-28-86-28-12-30-28-37-28-37-24-16 1-16 1-16 26 2 40 26 40 26 22 39 59 28 74 22 2-17 9-28 16-35-57-6-116-28-116-126 0-28 10-51 26-69-3-6-11-32 3-67 0 0 21-7 70 26 42-12 86-12 128 0 49-33 70-26 70-26 14 35 6 61 3 67 16 18 26 41 26 69 0 98-60 120-117 126 10 8 18 24 18 48l-1 70c0 6 3 12 16 12z"/></svg>
+    </a>
+    <a href="mailto:ssl2001@126.com" title="Email Me" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="Mail" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#328cff"/><path d="m250 186c-46 0-69 35-69 74 0 44 29 72 68 72 43 0 73-32 73-75 0-44-34-71-72-71zm-1-37c30 0 57 13 77 33 0-22 35-22 35 1v150c-1 10 10 16 16 9 25-25 54-128-14-187-64-56-149-47-195-15-48 33-79 107-49 175 33 76 126 99 182 76 28-12 41 26 12 39-45 19-168 17-225-82-38-68-36-185 67-248 78-46 182-33 244 32 66 69 62 197-2 246-28 23-71 1-71-32v-11c-20 20-47 32-77 32-57 0-108-51-108-108 0-58 51-110 108-110" fill="#fff"/></svg>
+    </a>
+    <a href="/feeds/all.atom.xml" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="RSS" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#f80"/><circle cx="145" cy="367" r="35" fill="#fff"/><path fill="none" stroke="#fff" stroke-width="60" d="M109 241c89 0 162 73 162 162M109 127c152 0 276 124 276 276"/></svg>
+    </a>
+</div>
+            
+
+
+
+
+
+            
+
+
+
+
+
+        </section>
+</div>
+</article>
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe.
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides.
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo https://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>                    </div>
+                    <div class="span1"></div>
+                </div>
+            </div>
+        </div>
+<footer>
+    <div>
+        Content licensed under <a rel="license nofollow noopener noreferrer"
+    href="http://creativecommons.org/licenses/by/4.0/" target="_blank">
+    Creative Commons Attribution 4.0 International License</a>.
+    </div>
+
+    <div>
+        <span class="site-name">SSL的个人Blog</span> - 记录开发随笔
+    </div>
+
+
+
+    <div id="fpowered">
+        Powered by: <a href="http://getpelican.com/" title="Pelican Home Page" target="_blank" rel="nofollow noopener noreferrer">Pelican</a>
+        Theme: <a href="https://elegant.oncrashreboot.com/" title="Theme Elegant Home Page" target="_blank" rel="nofollow noopener noreferrer">Elegant</a>
+        Hosted on:
+        <a href=https://www.github.com/ target="_blank" rel="nofollow noopener noreferrer">
+            Github
+        </a>
+    </div>
+</footer>            <script src="//code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script src="https://sunshanlu.github.io/sunshanlu/theme/js/elegant.prod.9e9d5ce754.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    <script>
+    (function () {
+        if (window.location.hash.match(/^#comment-\d+$/)) {
+            $('#comment_thread').collapse('show');
+        }
+    })();
+    window.onhashchange=function(){
+        if (window.location.hash.match(/^#comment-\d+$/))
+            window.location.reload(true);
+    }
+    $('#comment_thread').on('shown', function () {
+        var link = document.getElementById('comment-accordion-toggle');
+        var old_innerHTML = link.innerHTML;
+        $(link).fadeOut(200, function() {
+            $(this).text('Click here to hide comments').fadeIn(200);
+        });
+        $('#comment_thread').on('hidden', function () {
+            $(link).fadeOut(200, function() {
+                $(this).text(old_innerHTML).fadeIn(200);
+            });
+        })
+    })
+</script>
+
+    </body>
+    <!-- Theme: Elegant built for Pelican
+        License : MIT -->
+</html>

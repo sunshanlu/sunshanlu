@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>SSL的个人Blog - SLAM, 回环检测</title><link href="https://sunshanlu.github.io/sunshanlu/" rel="alternate"></link><link href="https://sunshanlu.github.io/sunshanlu/feeds/slam-hui-huan-jian-ce.atom.xml" rel="self"></link><id>https://sunshanlu.github.io/sunshanlu/</id><updated>2025-03-01T00:00:00+08:00</updated><subtitle>记录开发随笔</subtitle><entry><title>`Scan Context` 和 `Scan Context++`算法说明</title><link href="https://sunshanlu.github.io/sunshanlu/scan-context" rel="alternate"></link><published>2025-03-01T00:00:00+08:00</published><updated>2025-03-01T00:00:00+08:00</updated><author><name>孙善路-github</name></author><id>tag:sunshanlu.github.io,2025-03-01:/sunshanlu/scan-context</id><summary type="html">
+&lt;h2 id="1-scan-context"&gt;1. &lt;code&gt;Scan Context&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Scan Context&lt;/code&gt;论文通过&lt;strong&gt;构建旋转不变&lt;/strong&gt;的&lt;code&gt;PC&lt;/code&gt;描述子实现基于点云结构的回环闭合检测功能。&lt;/p&gt;
+&lt;h3 id="11-pc"&gt;1.1 &lt;code&gt;PC&lt;/code&gt;描述子构建过程&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;PC&lt;/code&gt;描述 …&lt;/p&gt;</summary><content type="html">
+&lt;h2 id="1-scan-context"&gt;1. &lt;code&gt;Scan Context&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Scan Context&lt;/code&gt;论文通过&lt;strong&gt;构建旋转不变&lt;/strong&gt;的&lt;code&gt;PC&lt;/code&gt;描述子实现基于点云结构的回环闭合检测功能。&lt;/p&gt;
+&lt;h3 id="11-pc"&gt;1.1 &lt;code&gt;PC&lt;/code&gt;描述子构建过程&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;PC&lt;/code&gt;描述子的构建在极坐标下，将点云信息编码成&lt;code&gt;2.5D&lt;/code&gt;的描述子信息。以雷达坐标系为中心，在&lt;code&gt;BEV&lt;/code&gt;视角下沿着极坐标系的轴向和角度方向划分&lt;code&gt;bin&lt;/code&gt;，然后&lt;code&gt;bin&lt;/code&gt;中保存着&lt;strong&gt;最高&lt;/strong&gt;点对应的&lt;strong&gt;z坐标值&lt;/strong&gt;，这个过程可以认定为点云将采样过程，其中轴向和角度方向可以由&lt;span class="math"&gt;\(N_r\)&lt;/span&gt;和&lt;span class="math"&gt;\(N_s\)&lt;/span&gt;两个超参数表示，同时也控制着得到&lt;code&gt;PC&lt;/code&gt;描述子的分辨率，&lt;code&gt;PC&lt;/code&gt;描述子的构建过程如下图所示，其中蓝色的点为空&lt;code&gt;bin&lt;/code&gt;对应的颜色，&lt;code&gt;PC&lt;/code&gt;描述子矩阵将其编码为&lt;code&gt;0&lt;/code&gt;。&lt;code&gt;PC&lt;/code&gt;描述子矩阵中，&lt;code&gt;row&lt;/code&gt;编码着下图(a)黄色圈&lt;code&gt;bin&lt;/code&gt;，&lt;code&gt;col&lt;/code&gt;编码着下图(a)青色&lt;code&gt;bin&lt;/code&gt;。使用最高点的高度作为编码的原因是作者认为，最高点可以较大程度的描述一个区域内的特征。&lt;/p&gt;
+&lt;p&gt;想象一下，当激光雷达的航向角发生变化时，&lt;code&gt;PC&lt;/code&gt;描述子矩阵的&lt;code&gt;col&lt;/code&gt;可能会发生整体左移，且超出列边界的列会依次填补到最左侧。因此当激光雷达仅发生航向角变化时，我们总可以找到一个列左移数&lt;span class="math"&gt;\(n\)&lt;/span&gt;，使得两个点云对应的&lt;code&gt;PC&lt;/code&gt;描述子矩阵完全相同，这也恰恰证明了&lt;code&gt;PC&lt;/code&gt;描述子的旋转不变性。根据这个逻辑，作者定义了由&lt;code&gt;PC&lt;/code&gt;描述子表示的两个点云之间的相关性公式如下。&lt;/p&gt;
+&lt;div class="math"&gt;$$
+\begin{align}
+    d(I^{q},I^c)&amp;amp;=1-\frac{1}{N_s}\sum_{j=1}^{N_s}{\frac{c_j^q\cdot c_j^c}{||c_j^q||||c_j^c||}}\\
+    D(I^q,I^c)&amp;amp;=\min_{n\in [N_s]}{d(I^q,I_n^c)}\\
+    n^*&amp;amp;=\arg \min_{n\in [N_s]} {d(I^q,I_n^c)}
+\end{align}
+$$&lt;/div&gt;
+&lt;p&gt;式中： - &lt;span class="math"&gt;\(I^{q}\)&lt;/span&gt;，当前激光雷达点云对应的&lt;code&gt;PC&lt;/code&gt;描述子矩阵； - &lt;span class="math"&gt;\(I^c\)&lt;/span&gt;，为数据库中雷达点云对应的&lt;code&gt;PC&lt;/code&gt;描述子矩阵； - &lt;span class="math"&gt;\(I^c_n\)&lt;/span&gt;，为数据库中雷达点云对应的&lt;code&gt;PC&lt;/code&gt;描述子矩阵列左移动&lt;code&gt;n&lt;/code&gt;列后得到的&lt;code&gt;PC&lt;/code&gt;描述子矩阵； - &lt;span class="math"&gt;\(d(I^{q},I^c)\)&lt;/span&gt;，为1-矩阵平均列余弦相似度，作为矩阵距离； - &lt;span class="math"&gt;\(D(I^q,I^c)\)&lt;/span&gt;，为当前激光雷达点云描述子&lt;span class="math"&gt;\(I^{q}\)&lt;/span&gt;与数据库中某个点云描述子&lt;span class="math"&gt;\(I^c\)&lt;/span&gt;的距离； - &lt;span class="math"&gt;\(n^*\)&lt;/span&gt;为最小距离对应行左移索引，此外，这个左移索引对应的旋转角度还可以&lt;strong&gt;作为&lt;span class="math"&gt;\(R_{cq}\)&lt;/span&gt;旋转矩阵的初值&lt;/strong&gt;。&lt;/p&gt;
+&lt;div align="center"&gt;
+&lt;image alt="描述子构建过程" src="https://sunshanlu.github.io/sunshanlu/images/scan_context.png" width="800px/"/&gt;
+&lt;/div&gt;
+&lt;div class="admonition note"&gt;
+&lt;p class="admonition-title"&gt;左移索引与旋转初值的关系&lt;/p&gt;
+&lt;p&gt;当数据库中的描述子矩阵和当前描述子矩阵为同一地点的不同角时，假设数据库对应描述子沿z轴逆时针旋转&lt;code&gt;k&lt;/code&gt;个角度单位时，对应描述子矩阵列必然向左移动&lt;code&gt;n&lt;/code&gt;个单位，这是因为世界坐标系下的静态物体在移动过程中，世界坐标不会发生改变，但在雷达坐标系下却向右旋转了而，反应在描述子矩阵上为向左移动的一段距离。这时&lt;code&gt;n&lt;/code&gt;乘单位&lt;code&gt;bin&lt;/code&gt;对应的角度即可描述旋转矩阵&lt;span class="math"&gt;\(R_{cq}\)&lt;/span&gt;的初值。&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="12-scan-context"&gt;1.2 &lt;code&gt;Scan Context&lt;/code&gt;算法思路&lt;/h3&gt;
+&lt;p&gt;从&lt;code&gt;PC&lt;/code&gt;描述子的相似度计算公式上来看，要计算当前点云和数据库中点云的相似程度，需要对数据库中的所有&lt;code&gt;PC&lt;/code&gt;描述子进行暴力检索，为了提高计算效率，&lt;code&gt;Scan Context&lt;/code&gt;算法提出了&lt;code&gt;Ring key&lt;/code&gt;描述符来加快回环闭合点云检索过程。&lt;code&gt;Ring Key&lt;/code&gt;的计算公式可以由下面的公式描述：&lt;/p&gt;
+&lt;div class="math"&gt;$$
+\begin{align}
+    &amp;amp;k_r&amp;amp;=&amp;amp;[\varphi(r_1),..., \varphi(r_{N_r})]^T\\
+    &amp;amp;\varphi(r_i)&amp;amp;=&amp;amp;\frac{||r_i||_0}{N_s}
+\end{align}
+$$&lt;/div&gt;
+&lt;p&gt;其中，&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(r_i\)&lt;/span&gt;代表&lt;code&gt;PC&lt;/code&gt;描述子矩阵第&lt;span class="math"&gt;\(i\)&lt;/span&gt;行，代表一圈描述子信息；&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(\varphi(r_i)\)&lt;/span&gt;为&lt;code&gt;PC&lt;/code&gt;描述符的行编码公式，由平均&lt;code&gt;L0&lt;/code&gt;范数描述，即计算行中非零元素的个数，并除以&lt;code&gt;N_s&lt;/code&gt;，得到行编码；&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(k_r\)&lt;/span&gt;为&lt;code&gt;Ring Key&lt;/code&gt;，其为所有行得到的计算结果的集合。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;通过上面描述的&lt;code&gt;Ring Key&lt;/code&gt;计算公式，可以由&lt;code&gt;PC&lt;/code&gt;描述子计算得到行编码值组成的&lt;code&gt;Ring Key&lt;/code&gt;向量，由行方向上非&lt;code&gt;0&lt;/code&gt;块数量近似代表这部分的点云特征。&lt;code&gt;Scan Context&lt;/code&gt;使用&lt;code&gt;kdtree&lt;/code&gt;存储&lt;code&gt;Ring Key&lt;/code&gt;向量，并使用&lt;code&gt;kdtree&lt;/code&gt;进行检索，从而提高检索效率。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Scan Context&lt;/code&gt;算法的详细流程如下图所示，可以发现&lt;code&gt;Ring Key&lt;/code&gt;描述符检索&lt;code&gt;kdtree&lt;/code&gt;可以快速得到最相似的&lt;code&gt;PC&lt;/code&gt;描述符。然后使用上面给出的&lt;code&gt;PC&lt;/code&gt;描述子距离公式计算点云相似程度。&lt;/p&gt;
+&lt;div align="center"&gt;
+&lt;image alt="`Scan Context`算法流程" src="https://sunshanlu.github.io/sunshanlu/images/process.png" width="800px/"/&gt;
+&lt;/div&gt;
+&lt;h3 id="13-scan-context"&gt;1.3 &lt;code&gt;Scan Context&lt;/code&gt;源码拓展内容&lt;/h3&gt;
+&lt;p&gt;从&lt;code&gt;Scan Context&lt;/code&gt;&lt;a href="https://github.com/gisbi-kim/scancontext_tro"&gt;代码仓库&lt;/a&gt;给出的&lt;code&gt;C++&lt;/code&gt;代码可以看出，代码中针对&lt;code&gt;PC&lt;/code&gt;描述符相似度计算过程做了一定优化。代码中引入了&lt;code&gt;Sector Key&lt;/code&gt;行向量描述符来&lt;strong&gt;快速计算出&lt;span class="math"&gt;\(n^*\)&lt;/span&gt;大小&lt;/strong&gt;。&lt;code&gt;Sector Key&lt;/code&gt;行向量计算过程可由下面公式描述：&lt;/p&gt;
+&lt;div class="math"&gt;$$
+\begin{align}
+    &amp;amp;k_s&amp;amp;=&amp;amp;[\phi(c_1),...,\phi(c_{N_s})]\\
+    &amp;amp;\phi(c_i)&amp;amp;=&amp;amp;\frac{||c_i||_1}{N_r}
+\end{align}
+$$&lt;/div&gt;
+&lt;p&gt;其中，&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(c_i\)&lt;/span&gt;为&lt;code&gt;PC&lt;/code&gt;描述子矩阵第&lt;span class="math"&gt;\(i\)&lt;/span&gt;列，代表一列描述子信息；&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(\phi(c_i)\)&lt;/span&gt;为&lt;code&gt;Sector Key&lt;/code&gt;的列编码公式，由平均&lt;code&gt;L1&lt;/code&gt;范数描述，并除以&lt;code&gt;N_r&lt;/code&gt;，得到列编码；&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(k_s\)&lt;/span&gt;为&lt;code&gt;Sector Key&lt;/code&gt;，其为所有列得到的计算结果的集合。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;可以这么理解，&lt;code&gt;Sector Key&lt;/code&gt;可以描述以雷达坐标系为中心的径向方向上的点云特征，可以由下面的公式计算两个&lt;code&gt;Sector Key&lt;/code&gt;的相似程度，并计算出对应的&lt;span class="math"&gt;\(n^*\)&lt;/span&gt;，然后使用&lt;span class="math"&gt;\(n^*\)&lt;/span&gt;邻域作为&lt;code&gt;PC&lt;/code&gt;描述符相似度的计算区间，可以大大减少&lt;span class="math"&gt;\(n\)&lt;/span&gt;的取值范围，从而提升&lt;code&gt;PC&lt;/code&gt;描述符的计算效率。&lt;/p&gt;
+&lt;div class="math"&gt;$$
+\begin{align}
+    &amp;amp;d(k_s^{q},k_s^c)&amp;amp;=&amp;amp;1-\frac{k_s^q\cdot k_s^c}{||k_s^q||||k_s^c||}\\
+    &amp;amp;D(k_s^q,k_s^c)&amp;amp;=&amp;amp;\min_{n\in [N_s]}{d(k_s^q,{k_s}_n^c)}\\
+    &amp;amp;n^*&amp;amp;=&amp;amp;\arg \min_{n\in [N_s]} {d(k_s^q,{k_s}_n^c)}
+\end{align}
+$$&lt;/div&gt;
+&lt;p&gt;其中，&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(k_s^{q}\)&lt;/span&gt;为当前点云的&lt;code&gt;Sector Key&lt;/code&gt;向量；&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(k_s^c\)&lt;/span&gt;为数据库中点云的&lt;code&gt;Sector Key&lt;/code&gt;向量；&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\({k_s}_n^c\)&lt;/span&gt;为左移&lt;code&gt;n&lt;/code&gt;列时对应的&lt;code&gt;Sector Key&lt;/code&gt;向量；&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(d(k_s^{q},k_s^c)\)&lt;/span&gt;为&lt;code&gt;Sector Key&lt;/code&gt;向量距离；&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(D(k_s^{q},k_s^c)\)&lt;/span&gt;为最小&lt;code&gt;Sector Key&lt;/code&gt;向量距离；&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(n^*\)&lt;/span&gt;为最小距离对应列左移索引。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="2-scan-context"&gt;2. &lt;code&gt;Scan Context++&lt;/code&gt;&lt;/h2&gt;
+&lt;h3 id="21-cc"&gt;2.1 &lt;code&gt;CC&lt;/code&gt;描述符构建&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;scan context++&lt;/code&gt;算法除了使用&lt;code&gt;PC&lt;/code&gt;描述符以外，还引入了&lt;code&gt;CC&lt;/code&gt;描述符，&lt;code&gt;CC&lt;/code&gt;描述符的构建过程如下图所示。与&lt;code&gt;PC&lt;/code&gt;描述符构建的极坐标系不同，&lt;code&gt;CC&lt;/code&gt;描述符构建的坐标系为笛卡尔坐标系，并以当前雷达坐标系为中心，在给定&lt;code&gt;bin&lt;/code&gt;尺寸后，可构建由矩阵描述的&lt;code&gt;Cart Context&lt;/code&gt;描述符。&lt;/p&gt;
+&lt;div align="center"&gt;
+&lt;image alt="PC和CC描述符" src="https://sunshanlu.github.io/sunshanlu/images/scan_context++.png" width="800px/"/&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;Cart Context&lt;/code&gt;描述符的距离计算过程与&lt;code&gt;PC&lt;/code&gt;描述符距离计算过程一致，并且&lt;code&gt;Scan Context++&lt;/code&gt;算法在论文中提到了&lt;code&gt;Scan Context&lt;/code&gt;代码优化中的&lt;code&gt;Sector key&lt;/code&gt;，从而加速描述符距离计算过程。&lt;/p&gt;
+&lt;h3 id="22"&gt;2.2 虚拟描述符增强&lt;/h3&gt;
+&lt;div align="center"&gt;
+&lt;image alt="PC和CC描述符" src="https://sunshanlu.github.io/sunshanlu/images/argument.png" width="800px/"/&gt;
+&lt;/div&gt;
+&lt;p&gt;在&lt;code&gt;Scan Context&lt;/code&gt;算法中，提到了&lt;code&gt;Root Shif&lt;/code&gt;的概念，即为了增强&lt;code&gt;PC&lt;/code&gt;描述符的平移不变性，将激光雷达点云中心移动到其他位置重新计算描述符，从而得到一个虚拟描述符，并虚拟描述符对应的平移变换，在计算相似度时，除了和原&lt;code&gt;PC&lt;/code&gt;描述符计算距离外，还需要和虚拟描述符计算距离，取最小值作为最终的相似度。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Scan Context++&lt;/code&gt;算法补充了&lt;code&gt;CC&lt;/code&gt;描述符增强概念，为了提高&lt;code&gt;CC&lt;/code&gt;描述符的旋转不变性，构造旋转180度的&lt;code&gt;CC&lt;/code&gt;虚拟描述符。反映在&lt;code&gt;CC&lt;/code&gt;描述符矩阵上为上下和左右倒置。&lt;/p&gt;
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: '#145402 ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;</content><category term="SLAM, 回环检测"></category><category term="SLAM"></category></entry><entry><title>`FAST-LIVO2重定位和回环思路`</title><link href="https://sunshanlu.github.io/sunshanlu/using-scan-context++" rel="alternate"></link><published>2025-03-01T00:00:00+08:00</published><updated>2025-03-01T00:00:00+08:00</updated><author><name>孙善路-github</name></author><id>tag:sunshanlu.github.io,2025-03-01:/sunshanlu/using-scan-context++</id><summary type="html">&lt;h2 id="_1"&gt;背景&lt;/h2&gt;
+&lt;p&gt;在最近的项目开展中，我负责速腾&lt;code&gt;M1&lt;/code&gt;激光雷达和森云相机&lt;code&gt;SG2-AR0233&lt;/code&gt;实现带有回环和重定位功能的融合&lt;code&gt;SLAM&lt;/code&gt;算法开发。我自主 …&lt;/p&gt;</summary><content type="html">&lt;h2 id="_1"&gt;背景&lt;/h2&gt;
+&lt;p&gt;在最近的项目开展中，我负责速腾&lt;code&gt;M1&lt;/code&gt;激光雷达和森云相机&lt;code&gt;SG2-AR0233&lt;/code&gt;实现带有回环和重定位功能的融合&lt;code&gt;SLAM&lt;/code&gt;算法开发。我自主改进了&lt;code&gt;Scan Context++&lt;/code&gt;算法，并根据最新开源的&lt;code&gt;FAST-LIVO2&lt;/code&gt;系统特性，开发了高效的回环闭合和重定位功能，这里对&lt;code&gt;Scan Context++&lt;/code&gt;算法的改进过程和适配&lt;code&gt;FAST-LIVO2&lt;/code&gt;特性的重定位和回环功能逻辑进行记录，下图是项目使用的传感器平台照片。&lt;/p&gt;
+&lt;div align='center'&gt;
+    &lt;image src="https://sunshanlu.github.io/sunshanlu/images/sensors.png" alt="`Scan Context`算法流程" width=800px/&gt;
+&lt;/div&gt;
+
+&lt;h2 id="scan-context"&gt;修改&lt;code&gt;Scan Context++&lt;/code&gt;算法&lt;/h2&gt;
+&lt;p&gt;根据我对&lt;code&gt;Scan Context++&lt;/code&gt;算法的分析和使用经验发现，&lt;code&gt;Polar Context&lt;/code&gt;描述子检测到的回环往往更稳定且更多，而&lt;code&gt;Cart Context&lt;/code&gt;描述子由于作用在笛卡尔坐标系中，受到旋转干扰时，&lt;code&gt;Cart Context&lt;/code&gt;往往不能检测出回环情况，但&lt;code&gt;Cart Context&lt;/code&gt;描述子距离计算往往能得到平移初始值。因此在回环候选寻找阶段，我仅使用&lt;code&gt;PC&lt;/code&gt;描述子而不使用&lt;code&gt;CC&lt;/code&gt;描述子，这样可以避免由于旋转问题导致&lt;code&gt;CC&lt;/code&gt;描述子鲁棒性不高的问题，当&lt;code&gt;PC&lt;/code&gt;描述子检测到候选回环时，根据&lt;code&gt;PC&lt;/code&gt;描述子给出的旋转初始值估计&lt;span class="math"&gt;\(R_{cq}\)&lt;/span&gt;，将当前激光雷达帧旋转到候选雷达帧对应位置后，构造当前帧的&lt;code&gt;Cart Context&lt;/code&gt;描述子，然后根据构造的当前帧新&lt;code&gt;CC&lt;/code&gt;描述子和回环候选的&lt;code&gt;CC&lt;/code&gt;描述子进行匹配计算得到平移估计初始值&lt;span class="math"&gt;\(t_{cq}\)&lt;/span&gt;。修改后的算法流程如下。&lt;/p&gt;
+&lt;div align='center'&gt;
+    &lt;image src="https://sunshanlu.github.io/sunshanlu/images/scan_context_modify.png" alt="`Scan Context`算法流程" width=800px/&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Bin&lt;/code&gt;编码过程分为&lt;code&gt;PC&lt;/code&gt;极坐标编码和&lt;code&gt;CC&lt;/code&gt;笛卡尔坐标编码；&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;PC&lt;/code&gt;描述子构建过程与&lt;code&gt;Scan Context&lt;/code&gt;算法保持一致；&lt;/li&gt;
+&lt;li&gt;增强&lt;code&gt;PC&lt;/code&gt;描述子过程对应&lt;code&gt;Scan Context&lt;/code&gt;论文中的&lt;code&gt;Root Shift&lt;/code&gt;过程&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Ring key&lt;/code&gt;计算过程与&lt;code&gt;Scan Context&lt;/code&gt;算法保持一致；&lt;/li&gt;
+&lt;li&gt;数据库&lt;code&gt;kdtree&lt;/code&gt;对应的索引由&lt;code&gt;Ring key&lt;/code&gt;描述，而内容保存增强&lt;code&gt;PC&lt;/code&gt;描述子以及对应相对平移量、CC描述子和位姿；&lt;/li&gt;
+&lt;li&gt;最近回环候选寻找由&lt;code&gt;kdtree&lt;/code&gt;根据&lt;code&gt;Ring Key&lt;/code&gt;检索给出；&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sector key&lt;/code&gt;计算估计初始值过程与&lt;code&gt;Scan Context&lt;/code&gt;算法保持一致；&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;PC&lt;/code&gt;描述子计算实际n与&lt;code&gt;Scan Context&lt;/code&gt;算法保持一致；&lt;/li&gt;
+&lt;li&gt;根据&lt;code&gt;PC&lt;/code&gt;估计的&lt;span class="math"&gt;\(R_{cq}\)&lt;/span&gt;计算去旋转&lt;code&gt;CC&lt;/code&gt;描述子和当前状态&lt;code&gt;CC&lt;/code&gt;描述子；&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;row key&lt;/code&gt;和&lt;code&gt;col key&lt;/code&gt;计算，其实是行方向平均&lt;span class="math"&gt;\(L_1\)&lt;/span&gt;范数，列方向平均&lt;span class="math"&gt;\(L_1\)&lt;/span&gt;范数计算对应的列向量和行向量，然后使用&lt;code&gt;Scan Context++&lt;/code&gt;算法描述的最小描述符距离计算得到最小值对应的行偏移索引和列偏移索引；&lt;/li&gt;
+&lt;li&gt;使用行偏移索引和列偏移索引计算两个&lt;code&gt;CC&lt;/code&gt;描述符对应邻域内的最小值，然后根据&lt;code&gt;CC&lt;/code&gt;描述子的分辨率获得估计的平移向量。而初始的旋转角度由&lt;code&gt;PC&lt;/code&gt;描述子距离计算给出。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="fast-livo2"&gt;&lt;code&gt;FAST-LIVO2&lt;/code&gt;回环闭合功能和重定位功能&lt;/h2&gt;
+&lt;div align='center'&gt;
+    &lt;image src="https://sunshanlu.github.io/sunshanlu/images/loop_closure.png" alt="`Scan Context`算法流程" width=800px/&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我使用子地图策略实现&lt;code&gt;FAST-LIVO2&lt;/code&gt;的回环闭合和全局重定位功能。上图描述的是回环闭合和重定位功能主要包含以下几个方面：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;子地图结构和保存逻辑（保存时机、保存内容）&lt;/li&gt;
+&lt;li&gt;子地图之间的点云配准和点云与子地图之间的配准逻辑&lt;/li&gt;
+&lt;li&gt;回环闭合功能开始逻辑，对于回环闭合功能，当检测到的回环和当前帧之间不在同一子地图时，回环闭合功能开始&lt;/li&gt;
+&lt;li&gt;全局重定位功能逻辑，全局重定位逻辑主要是在已有子地图保存文件基础上，系统开始时做的重定位逻辑，确定当前帧与回环子地图之间的相对位姿&lt;/li&gt;
+&lt;li&gt;子地图状态更新逻辑，当子地图之间位姿图优化完成后，需要将每个子地图内部对应的点云帧位姿进行更新、平面点更新、平面法向量更新，基于位姿变换更新，更新逻辑比较简单。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="_2"&gt;子地图结构和保存逻辑&lt;/h3&gt;
+&lt;p&gt;下面图是我截取的&lt;code&gt;FAST-LIVO2&lt;/code&gt;的局部地图的管理逻辑，其中区域&lt;code&gt;A&lt;/code&gt;和区域&lt;code&gt;B&lt;/code&gt;组成了上一时刻的局部地图，区域&lt;code&gt;B&lt;/code&gt;和区域&lt;code&gt;C&lt;/code&gt;组成这一时刻的局部地图。&lt;strong&gt;在区域&lt;code&gt;A&lt;/code&gt;析构前&lt;/strong&gt;，需要对区域&lt;code&gt;A&lt;/code&gt;和区域&lt;code&gt;B&lt;/code&gt;组成的之前的局部地图进行磁盘&lt;strong&gt;永久保存&lt;/strong&gt;。主要保存内容有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;体素内平面中心点，用于子地图之间的配准；&lt;/li&gt;
+&lt;li&gt;体素内平面法向量，用于子地图之间的配准；&lt;/li&gt;
+&lt;li&gt;局部地图内包含的点云帧&lt;code&gt;id&lt;/code&gt;信息和位姿信息，用于&lt;code&gt;scan context++&lt;/code&gt;构造的点云之间位姿初值向子地图之间位姿转换；&lt;/li&gt;
+&lt;li&gt;局部地图内包含的点云帧对应的&lt;code&gt;PC&lt;/code&gt;描述子、&lt;code&gt;PC&lt;/code&gt;增强描述子、&lt;code&gt;CC&lt;/code&gt;描述子，用于当前点云帧的&lt;code&gt;scan context++&lt;/code&gt;候选回环检测；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div align='center'&gt;
+    &lt;image src="https://sunshanlu.github.io/sunshanlu/images/save_stragy.png" alt="`Scan Context`算法流程" width=800px/&gt;
+&lt;/div&gt;
+
+&lt;h3 id="_3"&gt;子地图之间的配准逻辑和点云与子地图配准逻辑&lt;/h3&gt;
+&lt;p&gt;当回环闭合开始时，当使用改进的&lt;code&gt;scan context++&lt;/code&gt;算法获取数据库回环候选的点云帧后，根据改进的&lt;code&gt;scan context++&lt;/code&gt;算法，可以拿到初始的描述当前点云帧和回环候选点云帧之间的旋转矩阵和平移向量，将这部分相对位姿转换到对应的两个子地图下。使用&lt;strong&gt;双向映射&lt;/strong&gt;的点到面的ICP算法，实现子地图之间的配准逻辑。&lt;/p&gt;
+&lt;p&gt;当&lt;code&gt;SLAM&lt;/code&gt;系统开始时，需要寻找当前点云在之前地图中的位姿信息，当使用改进&lt;code&gt;scan context++&lt;/code&gt;算法获取到候选回环点云后，加载子地图并构建点到面的&lt;code&gt;ICP&lt;/code&gt;问题，并使用&lt;code&gt;huber&lt;/code&gt;核函数估计当前帧与候选回环子地图的相对位姿关系。&lt;/p&gt;
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: '#145402 ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;</content><category term="SLAM, 回环检测"></category><category term="SLAM"></category></entry></feed>

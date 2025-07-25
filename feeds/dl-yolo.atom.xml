@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>SSL的个人Blog - DL, yolo</title><link href="https://sunshanlu.github.io/sunshanlu/" rel="alternate"></link><link href="https://sunshanlu.github.io/sunshanlu/feeds/dl-yolo.atom.xml" rel="self"></link><id>https://sunshanlu.github.io/sunshanlu/</id><updated>2025-04-02T00:00:00+08:00</updated><subtitle>记录开发随笔</subtitle><entry><title>IA-YOLO原理</title><link href="https://sunshanlu.github.io/sunshanlu/principle-of-IA-YOLO" rel="alternate"></link><published>2025-04-02T00:00:00+08:00</published><updated>2025-04-02T00:00:00+08:00</updated><author><name>孙善路-github</name></author><id>tag:sunshanlu.github.io,2025-04-02:/sunshanlu/principle-of-IA-YOLO</id><summary type="html">
+&lt;h2 id="1-ia-yolo"&gt;1. 端到端的IA-YOLO原理&lt;/h2&gt;
+&lt;p&gt;目前项目需要实现在恶劣环境下实现目标检测功能，通过实验发现，目标检测在雨、雾、扬尘等恶劣光照条件 …&lt;/p&gt;</summary><content type="html">
+&lt;h2 id="1-ia-yolo"&gt;1. 端到端的IA-YOLO原理&lt;/h2&gt;
+&lt;p&gt;目前项目需要实现在恶劣环境下实现目标检测功能，通过实验发现，目标检测在雨、雾、扬尘等恶劣光照条件下性能骤降，而使用传统方法先增强图像再进行深度学习检测往往存在任务冲突与信息损失。最近通过查找资料发现，2022年发表的IA-YOLO方法提出了一种端到端自适应框架通过&lt;strong&gt;可微图像处理模块DIP&lt;/strong&gt;和 &lt;strong&gt;​​&lt;span class="caps"&gt;CNN&lt;/span&gt;-PP模块​​参数预测&lt;/strong&gt; ，并使用与&lt;code&gt;yolov3&lt;/code&gt;混合优化实现恶劣环境下效率与精度的提高。下面重点对&lt;code&gt;IA-YOLO&lt;/code&gt;中的&lt;code&gt;DIP&lt;/code&gt;和&lt;code&gt;CNN-PP&lt;/code&gt;模块进行介绍。&lt;/p&gt;
+&lt;h3 id="11-dip"&gt;1.1 可微的图像处理模块DIP&lt;/h3&gt;
+&lt;p&gt;DIP模块的设计原则如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;与像素操作的&lt;strong&gt;可微性&lt;/strong&gt;，支持梯度的反向传播，实现与检测器的端到端训练；&lt;/li&gt;
+&lt;li&gt;与&lt;strong&gt;分辨率&lt;/strong&gt;无关，支持任意分辨率的输入；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;可微的图像处理模块主要由去雾滤波器、逐像素滤波器（白平衡，&lt;code&gt;gamma&lt;/code&gt;，&lt;code&gt;tone&lt;/code&gt;曲线，对比度）和锐化滤波器组成。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;WB&lt;/code&gt;白平衡操作由3个参数组成，分别是&lt;span class="math"&gt;\(w_r\)&lt;/span&gt;，&lt;span class="math"&gt;\(w_g\)&lt;/span&gt;和&lt;span class="math"&gt;\(w_b\)&lt;/span&gt;。对图像的作用可以由下面的公式描述：&lt;/p&gt;
+&lt;div class="math"&gt;$$
+    P_o = (w_rr_i,w_gg_i,w_bb_i)
+$$&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;gamma&lt;/code&gt;操作由1个参数&lt;span class="math"&gt;\(\gamma\)&lt;/span&gt;描述，当&lt;span class="math"&gt;\(\gamma &amp;lt; 1\)&lt;/span&gt;时候，暗部细节会增强，图像整体会变亮，这种情况为&lt;strong&gt;伽玛压缩&lt;/strong&gt;，主要应用在低光照图像增强；当&lt;span class="math"&gt;\(\gamma &amp;gt; 1\)&lt;/span&gt;时候，亮部细节增强，整体变暗，这种情况为&lt;strong&gt;伽玛展开&lt;/strong&gt;，主要应用在高光抑制、对比度提升。它可以由下面的公式描述：&lt;/p&gt;
+&lt;div class="math"&gt;$$
+    P_o = P_i^{\gamma}
+$$&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;Tone&lt;/code&gt;曲线又叫色调调整曲线，在&lt;code&gt;IA-YOLO&lt;/code&gt;中设计成为由&lt;code&gt;8&lt;/code&gt;个参数组成的分段线性曲线。从而实现不同颜色通道的映射。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Contrast&lt;/code&gt;对比度操作，使用参数&lt;span class="math"&gt;\(\alpha\)&lt;/span&gt;进行调节，对比度可以&lt;strong&gt;描述图像的最大和最小亮度之间的关系&lt;/strong&gt;，当对比度增大时，图像的亮暗分布比较明显,可以由下面的公式描述：&lt;/p&gt;
+&lt;div class="math"&gt;$$
+\begin{align}
+    &amp;amp;P_o &amp;amp;=&amp;amp; \alpha \cdot En(P_i) + (1-\alpha)\cdot P_i\\
+    &amp;amp;Lum(P_i)&amp;amp;=&amp;amp;0.27 r_i + 0.67 g_i + 0.06 b_i\\
+    &amp;amp;EnLum(P_i) &amp;amp;=&amp;amp; \frac{1}{2}(1-\cos(\pi \times(Lum(P_i))))\\
+    &amp;amp;En(P_i)&amp;amp;=&amp;amp;P_i\times \frac{EnLum(P_i)}{Lum(P_i)}
+\end{align}
+$$&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;Sharpen&lt;/code&gt;图像锐化操作，可以突出显示图像的细节，锐化过程可以由下面的公式进行描述，其中&lt;span class="math"&gt;\(I(x)\)&lt;/span&gt;是输入图像，&lt;span class="math"&gt;\(G(I(x))\)&lt;/span&gt;表示高斯滤波器，&lt;span class="math"&gt;\(\lambda\)&lt;/span&gt;是一个正的比例因子。&lt;/p&gt;
+&lt;div class="math"&gt;$$
+    F(x, \lambda)=I(x)+\lambda(I(x)-G(I(x)))
+$$&lt;/div&gt;
+&lt;p&gt;论文参考暗通道先验方法的启发，设计了具有可学习参数的去雾滤波器，由大气散射模型推到得到，去雾滤波器可以由下面的公式描述，其中，&lt;span class="math"&gt;\(J(x)\)&lt;/span&gt;代表干净图像，&lt;span class="math"&gt;\(I(x)\)&lt;/span&gt;代表雾化之后的图像，A为全球大气光，由&lt;span class="math"&gt;\(I(x)\)&lt;/span&gt;对应的最亮的1000个像素平均值估计。参数&lt;span class="math"&gt;\(\omega\)&lt;/span&gt;为去雾滤波的学习参数。&lt;/p&gt;
+&lt;div class="math"&gt;$$
+\begin{align}
+    &amp;amp;I(x)&amp;amp;=&amp;amp;J(x)t(x) + A(1-t(x))\\
+    &amp;amp;t(x)&amp;amp;=&amp;amp;1-\omega \min_C(\min_{x}\frac{I^C(x)}{A^C})
+\end{align}
+$$&lt;/div&gt;
+&lt;p&gt;其前向传播过程可以由图下图描述：&lt;/p&gt;
+&lt;div align="center"&gt;
+&lt;image src="https://sunshanlu.github.io/sunshanlu/images/ia-yolo-forwad.png" width="1000"/&gt;
+&lt;/div&gt;
+&lt;h3 id="12-cnn-ppyolo"&gt;1.2 &lt;span class="caps"&gt;CNN&lt;/span&gt;-PP和YOLO混合训练过程&lt;/h3&gt;
+&lt;div align="center"&gt;
+&lt;image src="https://sunshanlu.github.io/sunshanlu/images/ia-yolo.png" width="1000"/&gt;
+&lt;/div&gt;
+&lt;p&gt;整个训练过程可以由上面的图进行描述，以有雾的场景为例，&lt;code&gt;CNN-PP&lt;/code&gt;模块的目的是通过&lt;strong&gt;了解图像的全局内容&lt;/strong&gt;，如亮度、颜色、色调，以及雾的程度，来预测&lt;code&gt;DIP&lt;/code&gt;模块的参数。因此，降采样图像足以估计这些信息，从而&lt;strong&gt;大大节省了计算成本&lt;/strong&gt;。对给定任何分辨率的输入图像，&lt;code&gt;IA-YOLO&lt;/code&gt;简单地使用双线性插值将其降采样到&lt;code&gt;256×256&lt;/code&gt;分辨率。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;CNN-PP&lt;/code&gt;网络由5个卷积层和2个全连通层组成。每个卷积块包括一个3×3的卷积层，&lt;code&gt;stride&lt;/code&gt;为2和一个&lt;code&gt;Leaky Relu&lt;/code&gt;激活函数。最终的全连接层输出DIP模块的超参数。这五个卷积层的输出通道分别为16、32、32、32和32。当参数总数为15个时，&lt;code&gt;CNN-PP&lt;/code&gt;模型只包含&lt;code&gt;165K&lt;/code&gt;个参数。&lt;/p&gt;
+&lt;p&gt;最后，使用&lt;code&gt;yolov3&lt;/code&gt;的损失函数，来联合优化&lt;code&gt;yolo&lt;/code&gt;和&lt;code&gt;CNN-PP&lt;/code&gt;模型。&lt;/p&gt;
+&lt;p&gt;其核心优势：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;强大的自适应能力&lt;/strong&gt;​​：同一模型处理正常/恶劣天气，无性能下降（VOC_norm测试集mAP 73.23%）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;高效的计算&lt;/strong&gt;：&lt;code&gt;CNN-PP&lt;/code&gt;网络使用将采样后的图像作为输入，仅增加了少量参数，优于加深网络层数的方法。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: '#145402 ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;</content><category term="DL, yolo"></category><category term="DL"></category><category term="YOLO"></category></entry></feed>

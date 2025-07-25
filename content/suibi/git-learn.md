@@ -1,3 +1,14 @@
+---
+authors: 孙善路-github, 孙善路-bilibili
+title: git工具使用总结
+tags: git
+date: 2025-06-30
+slug: git-learn
+Category: 随笔
+description: 对git使用中遇到的问题进行详细总结,还涉及submodule attributes等git的高级功能
+---
+
+
 ## 1. git仓库创建
 
 ### 1.1 本地创建并推送
@@ -271,6 +282,51 @@ examples/ export-ignore
 - `git archive -o xxx/xxx.tar.gz [commit]`，会查看`.gitattributes`文家里面有关的归档操作。
 - `.gitattributes`文件里面的等号相连之间**不能存在空格**，否则为非法，就像`json`文件里面不能使用单引号表示字符串一样。
 
+`.gitsubmodules`文件用于管理项目下的子模块,其主要在以下几种情况下比较有用:
+
+- 当子模块和当前项目都是你们自己团队的任务时,你们可以同时对子模块和当前项目进行开发;
+- 当子模块为项目依赖的某个开源三方库时,使用子模块操作,可以减少当前项目占用的仓库空间;
+
+为项目添加一个现有的子模块,可以使用下面的命令实现:
+
+```bash
+git submodule add -b <branch-name> -- <url> <path>
+```
+
+- `branch-name`为模块依赖的分支名称
+- `url`为模块对应的远程仓库地址
+- `path`为模块在项目工作空间存放的路径位置
+
+当添加了某个子模块后,应该如何删除呢?
+
+```bash
+git submodule deinit -- <path> # 取消子模块与当前工作区间的关联
+rm -rf .git/modules/<path>     # 删除.git下对于子模块的存储逻辑
+nano .gitmodules               # 针对性的处理.gitmodules文件,对相关模型进行删除
+```
+
+当模块中的内容发生改变时,项目和子模块如何使用`git`进行管理呢?
+```bash
+cd <submodule-path>
+git add .
+git commit =m "<module-commit-message>"
+cd <project-path>
+git add .
+git commit -m "<project-sync-module-message>"
+git push   # 同步更新子模块远程仓库和项目远程仓库
+```
+
+当`clone`某个带有子模块的项目时,应该同步`clone`它的子模块呢?
+```bash
+git clone <project-with-submodule>
+git submodule update --init --recursive
+```
+
+- `--init` 初始化子模块和项目关联
+- `--recursive` 递归的处理所有子模块下的子模块
+
+
+
 ### 4.2 diff操作查看文件差异
 
 ```bash
@@ -283,7 +339,6 @@ git diff <commit-a> <commit-b>         # 查看两个commot之间所有文件差
 - 针对两个`commit`之间的差异，`<commit-a>`为原始`commit`而`<commit-b>`为修改`commit`，相当于查看`<commit-b>`相比与`<commit-a>`之间修改了什么内容。
 - `--stat`可选参数可以输出统计信息，即显示某个文件修改的行数，可以快速查看那些文件作了多少的修改，比较直观。
 
-`.gitsubmodules`文件
 
 ### 4.3 log操作查看某次提交的提交记录
 

@@ -345,3 +345,14 @@ git diff <commit-a> <commit-b>         # 查看两个commot之间所有文件差
 - 当直接使用`git log`时，会将`HEAD`指向的`commit`对应的所有父级（包含其本身）对应的`commit`对应的`hash`值和`commit content`内容打印出来（包括时间、作者和邮箱信息）。
 - 注意，这里的父级不仅包含同一`branch`下的`commit`关系，还包含了`merge`后，`merge`节点对应的`commit`的父子关系。
 - 当`git log <commit/branch/tag>`时，对应的都是其指向的`commit`对应的所有父级（包含其本身）的`commit`节点信息。
+
+### 4.4 团队合作谨用rebase操作
+
+- `git rebase` 一个比较危险的操作，它最普通的用法是可以将某个`branch`的所有`commit`的父`commit`转换到指定的`commit`下，也叫做`branch`的换基操作。
+- 此外，交互式`rebase`操作通过`-i`选项打开，通过指定某个`commit`，对其子`commit`进行统一的修改操作
+  - `edit`，对某个`commit`提交的内容不满意，可以对这个`commit`进行针对性的修改，然后使用`git rebase --continue`继续
+  - `reword`，对某个`commit`提交的`commit message`进行修改
+  - `squash`，对多个`commit`操作执行合并操作
+  - `fix-up`，对多个`commit`合并但丢弃提交信息
+  - `drop`，删除提交，或者直接在交互界面删除某行即可。
+- 注意，`git rebase`操作会在指定的`upstream`的基础上，生成新的`commit`，新生成的`commit`的`commit hash`发生了改变，因此当向远程推送时，远程仓库无法执行`fast forward`的合并操作，会导致推送失败。因此当团队合作开发时，请谨慎使用`git rebase`。
